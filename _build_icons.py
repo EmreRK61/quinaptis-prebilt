@@ -1,7 +1,9 @@
 """Generate PWA / apple-touch-icon PNGs from the authentic Quinaptis Q logo.
 
 Uses the cropped Q mark from the main logo (navy Q inside double gold ring)
-on a transparent background — matches the brand identity.
+on a transparent background. Centres on the alpha-weighted centroid so the
+ring sits in the visual middle of the icon — otherwise the asymmetric tail
+pulls the whole mark off to one side once iOS rounds the corners.
 """
 from PIL import Image
 import os
@@ -26,17 +28,44 @@ def load_q():
     return q
 
 
-def make_icon(q, size, padding_ratio=0.06):
-    """Paste the Q mark onto a transparent canvas of the target size."""
+def alpha_centroid(img):
+    """Return (cx, cy) = centroid of opacity — biased toward the dense ring."""
+    alpha = img.split()[-1]
+    w, h = img.size
+    total = 0
+    sx = 0
+    sy = 0
+    pixels = alpha.load()
+    for y in range(h):
+        for x in range(w):
+            a = pixels[x, y]
+            if a > 0:
+                total += a
+                sx += a * x
+                sy += a * y
+    if total == 0:
+        return w / 2, h / 2
+    return sx / total, sy / total
+
+
+def make_icon(q, cx, cy, size, padding_ratio=0.22):
+    """Paste q on transparent canvas with (cx, cy) aligned to canvas centre."""
     canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    inner = int(size * (1 - 2 * padding_ratio))
     qw, qh = q.size
-    scale = min(inner / qw, inner / qh)
+    # Scale so the longer of (distance from centroid to each edge) fits within
+    # the safe area on both sides. Worst-case span dominates.
+    inner_half = (size * (1 - 2 * padding_ratio)) / 2
+    max_reach = max(cx, qw - cx, cy, qh - cy)
+    scale = inner_half / max_reach
     new_w = max(1, int(qw * scale))
     new_h = max(1, int(qh * scale))
     q_resized = q.resize((new_w, new_h), Image.LANCZOS)
-    px = (size - new_w) // 2
-    py = (size - new_h) // 2
+    # New centroid in the resized image
+    cx_r = cx * scale
+    cy_r = cy * scale
+    # Paste so that centroid lands on canvas centre
+    px = int(round(size / 2 - cx_r))
+    py = int(round(size / 2 - cy_r))
     canvas.paste(q_resized, (px, py), q_resized)
     return canvas
 
@@ -44,6 +73,7 @@ def make_icon(q, size, padding_ratio=0.06):
 def main():
     q = load_q()
     q.save(os.path.join(OUT, '_q_source.png'))
+    cx, cy = alpha_centroid(q)
 
     sizes = {
         'icon-16.png': 16,
@@ -53,15 +83,14 @@ def main():
         'icon-512.png': 512,
     }
     for name, sz in sizes.items():
-        # apple-touch-icon sizes get iOS rounded corners — reserve 22% safe
-        # area so the Q's tail doesn't clip. Tiny favicons stay tight.
+        # More safe area for apple-touch-icon sizes (iOS rounded corners)
         if sz >= 180:
-            pad = 0.22
+            pad = 0.18
         elif sz >= 64:
             pad = 0.08
         else:
             pad = 0.02
-        icon = make_icon(q, sz, padding_ratio=pad)
+        icon = make_icon(q, cx, cy, sz, padding_ratio=pad)
         icon.save(os.path.join(OUT, name))
         print(f'{name}: {sz}x{sz}')
     print('Done.')
