@@ -13,10 +13,12 @@ SRC = os.path.join(OUT, '_q_source.png')
 DARK_BG = (35, 31, 32, 255)  # matches the source's background
 
 
-def make_square(img):
-    """Pad the image to a square with the source background colour."""
+def make_square(img, padding_ratio=0.12):
+    """Pad the image to a square (with breathing room) in the source bg colour."""
     w, h = img.size
-    side = max(w, h)
+    content_side = max(w, h)
+    # Extra margin so the logo doesn't touch the icon edges
+    side = int(content_side / (1 - 2 * padding_ratio))
     canvas = Image.new('RGBA', (side, side), DARK_BG)
     canvas.paste(img, ((side - w) // 2, (side - h) // 2))
     return canvas
