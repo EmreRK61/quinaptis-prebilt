@@ -49,6 +49,11 @@ body {
 body[data-screen-bg="light"] { background: #ffffff; }
 html:has(body[data-screen-bg="light"]) { background: #ffffff; }
 
+/* Selection screen has a dark bottom toolbar — matching body bg so
+   any phantom gap below the toolbar (iOS PWA quirk) blends in. */
+body[data-screen-bg="selection"] { background: #3a3a44; }
+html:has(body[data-screen-bg="selection"]) { background: #3a3a44; }
+
 button {
   font-family: inherit;
   cursor: pointer;
@@ -100,6 +105,10 @@ a:hover { text-decoration: underline; }
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
+  /* Default safe-area insets — individual screens override if they need
+     custom layout (e.g. welcome has its own edge-to-edge design). */
+  padding-top: max(env(safe-area-inset-top), 24px);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 .screen.active {
   display: flex;
@@ -124,7 +133,10 @@ a:hover { text-decoration: underline; }
 .screen[data-screen="welcome"] {
   flex-direction: column;
   justify-content: space-between;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  padding-top: max(env(safe-area-inset-top), 24px);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: max(env(safe-area-inset-bottom), 24px);
+  padding-left: env(safe-area-inset-left);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -319,7 +331,7 @@ a:hover { text-decoration: underline; }
   flex-direction: column;
   background: #ffffff;
   color: var(--ink);
-  padding-top: env(safe-area-inset-top);
+  padding-top: max(env(safe-area-inset-top), 24px);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -442,8 +454,12 @@ a:hover { text-decoration: underline; }
   flex-direction: column;
   background: #ffffff;
   color: var(--ink);
-  padding-top: env(safe-area-inset-top);
-  /* NO bottom padding — the toolbar itself extends into the safe area */
+  /* Fallback of 24px ensures the header never hugs the status bar even if
+     iOS reports safe-area-inset-top as 0 (some PWA edge cases). */
+  padding-top: max(env(safe-area-inset-top), 24px);
+  /* NO bottom padding — the toolbar itself extends into the safe area;
+     body bg (#3a3a44 for selection) fills any phantom gap. */
+  padding-bottom: 0;
 }
 
 .app-header-slim {

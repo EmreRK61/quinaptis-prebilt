@@ -31,9 +31,12 @@
   const screens = document.querySelectorAll('.screen');
   const modals  = document.querySelectorAll('.modal');
 
-  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection']);
+  const LIGHT_SCREENS = new Set(['main', 'inbound']);
+  const DARK_TOOLBAR_SCREENS = new Set(['selection']);
   function syncBodyBg(id) {
-    if (LIGHT_SCREENS.has(id)) {
+    if (DARK_TOOLBAR_SCREENS.has(id)) {
+      document.body.setAttribute('data-screen-bg', 'selection');
+    } else if (LIGHT_SCREENS.has(id)) {
       document.body.setAttribute('data-screen-bg', 'light');
     } else {
       document.body.removeAttribute('data-screen-bg');
