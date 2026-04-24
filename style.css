@@ -95,16 +95,20 @@ input[type="checkbox"] {
 a { color: var(--pb-navy); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* .app is pinned to all 4 edges of the viewport with position: fixed.
-   No explicit height — that way iOS PWA can never mis-report viewport height
-   and leave a navy gap at the bottom. Inset-based sizing ALWAYS fills the full
-   viewport regardless of what innerHeight / 100vh / 100dvh report. */
+/* .app fills the full viewport. Use `--app-height` (set by JS from
+   visualViewport.height) as the primary height — this is the only value
+   that's ALWAYS accurate on iOS PWA where 100vh / position:fixed can
+   report the wrong height. Fallbacks: 100dvh, 100vh, 100% for non-iOS. */
 .app {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  height: var(--app-height, 100dvh);
   display: flex;
   flex-direction: column;
   overflow: hidden;
