@@ -30,9 +30,15 @@ html, body {
 
 /* html/body background is synced with the active screen (see app.js `go()`)
    so the iOS PWA bottom safe-area / overscroll area always matches the
-   current screen's background (navy on welcome, white elsewhere). */
+   current screen's background (navy on welcome, white elsewhere).
+
+   `min-height: calc(100% + env(safe-area-inset-top))` is the canonical 2024
+   fix for the iOS standalone-PWA bug where position:fixed elements with
+   `status-bar-style=black-translucent` fall short of the physical screen
+   bottom by safe-area-inset-top+bottom, leaving a white gap at the bottom. */
 html {
   height: 100%;
+  min-height: calc(100% + env(safe-area-inset-top));
   background: #1C3D6E;
 }
 
@@ -95,18 +101,15 @@ input[type="checkbox"] {
 a { color: var(--pb-navy); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* .app fills the full viewport. Use `--app-height` (set by JS from
-   visualViewport.height) as the primary height — this is the only value
-   that's ALWAYS accurate on iOS PWA. Only anchor to top-left so the
-   explicit height drives the element size (inset: 0 + height conflicts). */
+/* Canonical iOS PWA pattern: position:fixed + inset:0 + 100dvh.
+   Combined with `html { min-height: calc(100% + env(safe-area-inset-top)) }`,
+   this pins the app to the physical top/bottom of the iPhone screen
+   (no white gaps) in standalone PWA mode. Fallback 100vh for legacy. */
 .app {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+  inset: 0;
   height: 100vh;
   height: 100dvh;
-  height: var(--app-height, 100dvh);
   display: flex;
   flex-direction: column;
   overflow: hidden;
