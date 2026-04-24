@@ -463,12 +463,16 @@ a:hover { text-decoration: underline; }
 .menu-row-active:active { background: #eef1f7; }
 
 /* ============ SELECTION (screen 8) ============ */
-.screen[data-screen="selection"] {
+.screen[data-screen="selection"],
+.screen[data-screen="doc-header"],
+.screen[data-screen="process-item"],
+.screen[data-screen="po-list"] {
   flex-direction: column;
   background: #ffffff;
   color: var(--ink);
   padding-top: env(safe-area-inset-top);
-  /* NO bottom padding — the toolbar itself extends into the safe area. */
+  /* NO bottom padding — each screen's toolbar handles safe-area-inset-bottom
+     internally. Double-padding would leave a white gap below the toolbar. */
   padding-bottom: 0;
 }
 
