@@ -4,7 +4,12 @@
   // on initial launch — causing a blue gap at the bottom. Recomputing after
   // a few paints (and on resize / visibility changes) matches the real pixels.
   function setAppHeight() {
-    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    // Prefer the larger of visualViewport.height and innerHeight — on iOS
+    // PWA these can differ, and we want the app to extend to the true
+    // physical screen edge (not stop short of the home indicator).
+    const vv = window.visualViewport ? window.visualViewport.height : 0;
+    const ih = window.innerHeight || 0;
+    const h = Math.max(vv, ih) || window.screen.height || 800;
     document.documentElement.style.setProperty('--app-height', h + 'px');
     // Force reflow so iOS recalculates layout immediately
     document.documentElement.offsetHeight;
