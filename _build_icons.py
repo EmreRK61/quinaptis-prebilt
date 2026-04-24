@@ -53,11 +53,10 @@ def main():
         'icon-512.png': 512,
     }
     for name, sz in sizes.items():
-        # apple-touch-icon sizes get iOS rounded corners, so reserve a
-        # larger safe area (~15%) so the Q's tail and gold ring don't clip.
-        # Tiny favicons (16/32) use minimal padding so the mark stays legible.
+        # apple-touch-icon sizes get iOS rounded corners — reserve 22% safe
+        # area so the Q's tail doesn't clip. Tiny favicons stay tight.
         if sz >= 180:
-            pad = 0.15
+            pad = 0.22
         elif sz >= 64:
             pad = 0.08
         else:
