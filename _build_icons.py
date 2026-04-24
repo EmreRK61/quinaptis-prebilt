@@ -1,7 +1,7 @@
-"""Generate favicons/apple-touch-icons from s60 (the Quinaptis Q artwork).
+"""Generate favicons/apple-touch-icons from s60 on a solid white canvas.
 
-Take _q_source.png (= s60), trim transparent borders, centre on a square
-canvas with enough padding so it renders cleanly at every size.
+Centres the Quinaptis Q artwork on a white square so iOS doesn't render
+the transparent areas as its own default dark chrome.
 """
 from PIL import Image
 import os
@@ -9,6 +9,8 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'assets')
 SRC = os.path.join(OUT, '_q_source.png')
+
+WHITE = (255, 255, 255, 255)
 
 
 def main():
@@ -26,9 +28,10 @@ def main():
     }
 
     for name, sz in sizes.items():
-        # iOS squircles its apple-touch-icons, so leave room.
-        pad = 0.15 if sz >= 180 else 0.05
-        canvas = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
+        pad = 0.12 if sz >= 180 else 0.05
+        # Build transparent overlay and composite over solid white background
+        white_bg = Image.new('RGBA', (sz, sz), WHITE)
+        overlay = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
         inner = int(sz * (1 - 2 * pad))
         qw, qh = q.size
         scale = min(inner / qw, inner / qh)
@@ -37,8 +40,9 @@ def main():
         resized = q.resize((nw, nh), Image.LANCZOS)
         px = (sz - nw) // 2
         py = (sz - nh) // 2
-        canvas.paste(resized, (px, py), resized)
-        canvas.save(os.path.join(OUT, name))
+        overlay.paste(resized, (px, py), resized)
+        final = Image.alpha_composite(white_bg, overlay).convert('RGB')
+        final.save(os.path.join(OUT, name))
         print(f'{name}: {sz}x{sz}')
     print('Done.')
 
