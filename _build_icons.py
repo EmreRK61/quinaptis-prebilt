@@ -15,12 +15,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'assets')
 SRC = 'C:/PreBilt/Prebilt new demo/s60.png'
 
-BLACK = (0, 0, 0, 255)
-SAFETY_RATIO = 0.10  # fraction of canvas reserved as safe margin each side
+BG = (255, 255, 255, 255)   # solid white background
+SAFETY_RATIO = 0.10          # fraction reserved as safe margin each side
 
 
 def clean_bg(img):
-    """Replace the gray/white checker bg with solid black; keep logo colours."""
+    """Replace s60's gray+white checker bg with solid white; keep logo colours."""
     img = img.convert('RGBA')
     px = img.load()
     w, h = img.size
@@ -30,7 +30,7 @@ def clean_bg(img):
             # Checker bg: R≈G≈B AND all channels are light (> 200).
             if r > 200 and g > 200 and b > 200 \
                and abs(r - g) < 20 and abs(g - b) < 20 and abs(r - b) < 20:
-                px[x, y] = BLACK
+                px[x, y] = BG
     return img
 
 
@@ -81,7 +81,7 @@ def build_icon(cleaned, ring_bbox, size):
     new_cx = ring_cx * scale
     new_cy = ring_cy * scale
 
-    canvas = Image.new('RGBA', (size, size), BLACK)
+    canvas = Image.new('RGBA', (size, size), BG)
     paste_x = int(round(size / 2 - new_cx))
     paste_y = int(round(size / 2 - new_cy))
     canvas.paste(resized, (paste_x, paste_y), resized)
