@@ -53,8 +53,15 @@ def main():
         'icon-512.png': 512,
     }
     for name, sz in sizes.items():
-        # Tiny padding keeps the gold outer ring from touching the edge
-        pad = 0.04 if sz >= 180 else 0.02
+        # apple-touch-icon sizes get iOS rounded corners, so reserve a
+        # larger safe area (~15%) so the Q's tail and gold ring don't clip.
+        # Tiny favicons (16/32) use minimal padding so the mark stays legible.
+        if sz >= 180:
+            pad = 0.15
+        elif sz >= 64:
+            pad = 0.08
+        else:
+            pad = 0.02
         icon = make_icon(q, sz, padding_ratio=pad)
         icon.save(os.path.join(OUT, name))
         print(f'{name}: {sz}x{sz}')
