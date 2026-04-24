@@ -49,10 +49,20 @@ body {
 body[data-screen-bg="light"] { background: #ffffff; }
 html:has(body[data-screen-bg="light"]) { background: #ffffff; }
 
-/* Selection screen has a dark bottom toolbar — matching body bg so
-   any phantom gap below the toolbar (iOS PWA quirk) blends in. */
-body[data-screen-bg="selection"] { background: #3a3a44; }
-html:has(body[data-screen-bg="selection"]) { background: #3a3a44; }
+/* Status-bar-area fill: a dark strip covering env(safe-area-inset-top) so
+   the iPhone notch region looks intentionally filled (matches TCT PWA UX).
+   Only top — bottom area stays whatever the current screen background is. */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background: var(--q-navy, #1C3D6E);
+  z-index: 100;
+  pointer-events: none;
+}
 
 button {
   font-family: inherit;
