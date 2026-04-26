@@ -469,7 +469,8 @@ a:hover { text-decoration: underline; }
 .screen[data-screen="po-list"],
 .screen[data-screen="selected-items"],
 .screen[data-screen="document-capture"],
-.screen[data-screen="image-display"] {
+.screen[data-screen="image-display"],
+.screen[data-screen="signature-capture"] {
   flex-direction: column;
   background: #ffffff;
   color: var(--ink);
@@ -2054,6 +2055,48 @@ a:hover { text-decoration: underline; }
   transition: background 0.15s ease;
 }
 .dc-more-btn:hover { background: rgba(255,255,255,0.08); }
+.dc-more-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  padding: 6px 0;
+  min-width: 200px;
+  z-index: 50;
+}
+.dc-more-menu[hidden] { display: none; }
+.dc-more-menu::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ffffff;
+  filter: drop-shadow(0 2px 1px rgba(0,0,0,0.06));
+}
+.dc-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--q-navy, #1C3D6E);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+.dc-more-item:hover { background: #f1f5fb; }
+.dc-more-item svg { flex-shrink: 0; }
 .dc-continue-btn {
   display: inline-flex;
   align-items: center;
@@ -2079,6 +2122,114 @@ a:hover { text-decoration: underline; }
   .dc-row { padding: 12px 14px; }
   .dc-toolbar { padding: 8px 10px; }
   .dc-continue-btn { padding: 8px 14px; font-size: 13px; }
+}
+
+/* ========================================================
+   Signature Capture screen
+   ======================================================== */
+.sc-body {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--paper);
+}
+.sc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px 24px;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.sc-stat label {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.sc-stat-value {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+.sc-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--q-navy, #1C3D6E);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background 0.12s ease;
+}
+.sc-skip-btn:hover { background: #f1f5fb; }
+
+@media (max-width: 640px) {
+  .sc-stats { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px; }
+  .sc-skip-btn { font-size: 13px; padding: 6px 8px; gap: 4px; }
+  .sc-skip-btn span { display: none; }
+}
+
+/* ============ Signature modal ============ */
+.modal-card-medium {
+  width: min(92vw, 560px);
+}
+.sig-modal-header {
+  height: 28px;
+  background: var(--q-navy, #1C3D6E);
+}
+.sig-field {
+  margin-bottom: 14px;
+}
+.sig-field label {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.sig-input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.sig-input:focus { border-color: var(--q-navy); }
+.sig-pad-field { margin-bottom: 0; }
+.sig-pad {
+  width: 100%;
+  height: 220px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+.sig-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 640px) {
+  .sig-pad { height: 180px; }
 }
 
 /* ========================================================

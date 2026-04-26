@@ -36,7 +36,7 @@
   const screens = document.querySelectorAll('.screen');
   const modals  = document.querySelectorAll('.modal');
 
-  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture', 'image-display']);
+  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture', 'image-display', 'signature-capture']);
   function syncBodyBg(id) {
     if (LIGHT_SCREENS.has(id)) {
       document.body.setAttribute('data-screen-bg', 'light');
@@ -881,16 +881,67 @@
       return;
     }
 
-    // Document Capture · continue (placeholder for next step)
+    // Document Capture · continue -> same as Capture Signature
     if (e.target.closest('[data-dc-continue]')) {
       e.preventDefault();
-      go(docCaptureOrigin || 'doc-header');
+      go('signature-capture');
+      openModal('signatureCapture');
       return;
     }
 
-    // Document Capture · more menu (placeholder)
+    // Document Capture · more menu toggle
     if (e.target.closest('[data-dc-more]')) {
       e.preventDefault();
+      const menu = document.querySelector('[data-dc-more-menu]');
+      if (menu) menu.hidden = !menu.hidden;
+      return;
+    }
+
+    // Document Capture · Capture Signature (popup item) -> Signature Capture screen
+    if (e.target.closest('[data-dc-capture-sig]')) {
+      e.preventDefault();
+      const menu = document.querySelector('[data-dc-more-menu]');
+      if (menu) menu.hidden = true;
+      go('signature-capture');
+      openModal('signatureCapture');
+      return;
+    }
+
+    // Document Capture · Upload Image (popup item, placeholder)
+    if (e.target.closest('[data-dc-upload-img]')) {
+      e.preventDefault();
+      const menu = document.querySelector('[data-dc-more-menu]');
+      if (menu) menu.hidden = true;
+      return;
+    }
+
+    // Close dc-more-menu when clicking outside
+    const dcMenu = document.querySelector('[data-dc-more-menu]');
+    if (dcMenu && !dcMenu.hidden) {
+      const wrap = dcMenu.closest('.dc-more-wrap');
+      if (wrap && !wrap.contains(e.target)) {
+        dcMenu.hidden = true;
+      }
+    }
+
+    // Signature Capture · Skip / Add Signature / Upload (placeholders) / OK / Cancel
+    if (e.target.closest('[data-sc-skip]')) {
+      e.preventDefault();
+      go('document-capture');
+      return;
+    }
+    if (e.target.closest('[data-sc-add-sig]')) {
+      e.preventDefault();
+      openModal('signatureCapture');
+      return;
+    }
+    if (e.target.closest('[data-sc-upload]')) {
+      e.preventDefault();
+      return;
+    }
+    if (e.target.closest('[data-sig-ok]') || e.target.closest('[data-sig-cancel]')) {
+      e.preventDefault();
+      closeAllModals();
       return;
     }
 
