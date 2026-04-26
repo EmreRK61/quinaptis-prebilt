@@ -233,8 +233,8 @@
   }
 
   // ================= MESSAGES MODAL =================
-  const THUMBS_UP_PATHS = '<path d="M7 22V11"></path><path d="M5 11h12.4a2 2 0 0 1 1.95 2.45l-1.5 7A2 2 0 0 1 15.9 22H7"></path><path d="M11 11V6.2a3 3 0 0 1 3-3h0a1 1 0 0 1 1 1V8c0 .8.45 1.5 1.1 1.85A3 3 0 0 0 17 10h.4"></path>';
-  const THUMBS_DOWN_PATHS = '<path d="M17 2v11"></path><path d="M19 13H6.6a2 2 0 0 1-1.95-2.45l1.5-7A2 2 0 0 1 8.1 2H17"></path><path d="M13 13v4.8a3 3 0 0 1-3 3h0a1 1 0 0 1-1-1V16c0-.8-.45-1.5-1.1-1.85A3 3 0 0 0 7 14h-.4"></path>';
+  const THUMBS_UP_PATHS = '<path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>';
+  const THUMBS_DOWN_PATHS = '<path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z"></path>';
 
   function showMessage(text, type) {
     const txt = document.querySelector('[data-msg-text]');
