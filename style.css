@@ -1657,6 +1657,8 @@ a:hover { text-decoration: underline; }
   transition: border-color 0.15s ease;
 }
 .pi-input:focus { border-color: var(--q-navy); }
+.pi-input.error,
+.pi-input.error:focus { border-color: #b9312c; }
 .pi-section-title {
   font-size: 14px;
   color: var(--ink-soft);
@@ -1858,3 +1860,27 @@ a:hover { text-decoration: underline; }
   .si-toolbar { padding: 8px 10px; }
   .si-post-btn { padding: 8px 14px; font-size: 13px; }
 }
+
+/* ========================================================
+   Bottom toast (validation feedback)
+   ======================================================== */
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  background: rgba(40, 44, 56, 0.92);
+  color: #f1f3f7;
+  padding: 10px 22px;
+  border-radius: 22px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 200;
+  max-width: 80%;
+  text-align: center;
+}
+.app-toast.show { opacity: 1; }

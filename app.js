@@ -228,6 +228,21 @@
     go('doc-header');
   }
 
+  // ================= TOAST =================
+  let toastTimer = null;
+  function showToast(msg) {
+    let toast = document.querySelector('.app-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'app-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
   // ================= SELECTED ITEMS (cart) =================
   let currentPo = '';
   let cartItems = [];
@@ -594,6 +609,7 @@
     if (e.target && e.target.matches && e.target.matches('[data-pi-input-qty]')) {
       const cleaned = e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
       if (cleaned !== e.target.value) e.target.value = cleaned;
+      if (e.target.value.trim()) e.target.classList.remove('error');
     }
   });
 
@@ -803,7 +819,11 @@
       const storageEl = document.querySelector('[data-pi-select-value]');
       const qty = (qtyInput?.value || '').trim();
       if (!qty || !/^[0-9]+(\.[0-9]+)?$/.test(qty) || parseFloat(qty) <= 0) {
-        if (qtyInput) qtyInput.focus();
+        if (qtyInput) {
+          qtyInput.classList.add('error');
+          qtyInput.focus();
+        }
+        showToast('Error found in input data');
         return;
       }
       const item = (document.querySelector('[data-pi-item]')?.textContent || '').trim();
