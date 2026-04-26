@@ -281,8 +281,12 @@
   function resetImageUploadDialog() {
     const nameInp = document.querySelector('[data-iu-name]');
     const okBtn = document.querySelector('[data-iu-ok]');
+    const previewWrap = document.querySelector('[data-iu-preview-wrap]');
+    const previewImg = document.querySelector('[data-iu-preview]');
     if (nameInp) nameInp.value = '';
     if (okBtn) okBtn.setAttribute('disabled', '');
+    if (previewWrap) previewWrap.hidden = true;
+    if (previewImg) previewImg.src = '';
     icPendingFile = null;
   }
 
@@ -313,8 +317,17 @@
       icPendingFile = file;
       const nameInp = document.querySelector('[data-iu-name]');
       const okBtn = document.querySelector('[data-iu-ok]');
+      const previewWrap = document.querySelector('[data-iu-preview-wrap]');
+      const previewImg = document.querySelector('[data-iu-preview]');
       if (nameInp) nameInp.value = file.name;
       if (okBtn) okBtn.removeAttribute('disabled');
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (previewImg) previewImg.src = ev.target.result;
+        if (previewWrap) previewWrap.hidden = false;
+      };
+      reader.readAsDataURL(file);
     }
     e.target.value = '';
   }
