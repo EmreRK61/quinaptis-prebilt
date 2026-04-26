@@ -36,7 +36,7 @@
   const screens = document.querySelectorAll('.screen');
   const modals  = document.querySelectorAll('.modal');
 
-  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture']);
+  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture', 'image-display']);
   function syncBodyBg(id) {
     if (LIGHT_SCREENS.has(id)) {
       document.body.setAttribute('data-screen-bg', 'light');
@@ -894,9 +894,13 @@
       return;
     }
 
-    // Document Capture · row click (placeholder)
-    if (e.target.closest('[data-dc-row]')) {
+    // Document Capture · row click -> Display screen
+    const dcRow = e.target.closest('[data-dc-row]');
+    if (dcRow) {
       e.preventDefault();
+      if (dcRow.dataset.dcRow === 'img') {
+        go('image-display');
+      }
       return;
     }
 
