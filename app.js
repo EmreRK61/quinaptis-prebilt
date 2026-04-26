@@ -299,8 +299,9 @@
       const d = new Date();
       const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
       const ext = (file.name.split('.').pop() || 'JPG').toUpperCase();
+      const baseName = file.name.replace(/\.[^.]+$/, '');
       icList.push({
-        title: '.' + ext,
+        title: baseName + '.' + ext,
         createdBy: 'Quinaptisteam',
         createdOn: d.toDateString(),
         dateDdMmYyyy: pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(),
