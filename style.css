@@ -1010,6 +1010,10 @@ a:hover { text-decoration: underline; }
   color: #c92a2a;
   background: transparent;
 }
+.msg-badge-success {
+  color: #2f8f3a;
+  background: transparent;
+}
 
 /* ============ MODAL ============ */
 .modal {

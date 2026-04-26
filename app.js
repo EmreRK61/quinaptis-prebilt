@@ -927,9 +927,32 @@
       return;
     }
 
-    // Selected-items · Post (placeholder for next screen)
+    // Selected-items · Post -> generate material doc, remove PO, show messages
     if (e.target.closest('[data-si-post]')) {
       e.preventDefault();
+      if (!cartItems.length) return;
+      // Generate a 10-digit "material document number" starting with 5
+      const materialDoc = '5' + Math.floor(1000000000 + Math.random() * 9000000000).toString().slice(0, 9);
+      // Remove the posted PO from in-memory list (resets on page refresh)
+      const poIdx = PO_DATA.findIndex(r => r.number === currentPo);
+      if (poIdx >= 0) PO_DATA.splice(poIdx, 1);
+      // Reset state for next demo run
+      cartItems = [];
+      currentPo = '';
+      editIndex = null;
+      renderSelectedItems();
+      renderPoList();
+      // Update messages modal content -> success
+      const msgText = document.querySelector('[data-msg-text]');
+      const msgBadge = document.querySelector('[data-msg-badge]');
+      if (msgText) msgText.textContent = 'Material document ' + materialDoc + ' posted';
+      if (msgBadge) {
+        msgBadge.textContent = 'S';
+        msgBadge.classList.remove('msg-badge-error');
+        msgBadge.classList.add('msg-badge-success');
+      }
+      go('selection');
+      openModal('messages');
       return;
     }
 
