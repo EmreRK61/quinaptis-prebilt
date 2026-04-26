@@ -2136,20 +2136,9 @@ a:hover { text-decoration: underline; }
   max-width: 480px;
   height: auto;
 }
-.sig-content {
-  flex-direction: column;
-  gap: 12px;
-}
-.sig-info {
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--ink);
-  text-align: left;
-  align-self: center;
-}
 .sig-img {
-  max-width: 65%;
-  max-height: 50%;
+  max-width: 75%;
+  max-height: 80%;
   object-fit: contain;
 }
 @media (max-width: 640px) {

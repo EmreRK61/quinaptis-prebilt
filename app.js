@@ -908,11 +908,6 @@
         if (typeEl) typeEl.textContent = 'JPG';
         if (palletEl) palletEl.hidden = true;
         if (sigEl) sigEl.hidden = false;
-        const dateEl = document.querySelector('[data-sig-date]');
-        if (dateEl) {
-          const d = new Date();
-          dateEl.textContent = pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear();
-        }
       } else {
         if (nameEl) nameEl.textContent = 'Demo IMG';
         if (typeEl) typeEl.textContent = 'JPG';
