@@ -1658,7 +1658,10 @@ a:hover { text-decoration: underline; }
 }
 .pi-input:focus { border-color: var(--q-navy); }
 .pi-input.error,
-.pi-input.error:focus { border-color: #b9312c; }
+.pi-input.error:focus {
+  border: 2px solid #b9312c !important;
+  background: #fdf3f3;
+}
 .pi-section-title {
   font-size: 14px;
   color: var(--ink-soft);
