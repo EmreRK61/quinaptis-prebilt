@@ -1219,10 +1219,7 @@
     // Image Capture · Upload (commit list to Attachment List, navigate back)
     if (e.target.closest('[data-ic-upload]')) {
       e.preventDefault();
-      if (!icList.length) {
-        go('document-capture');
-        return;
-      }
+      if (!icList.length) return;
       icList.forEach(it => {
         dcUploads.push({
           kind: 'img',
