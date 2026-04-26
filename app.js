@@ -273,6 +273,81 @@
   }
 
   let icPendingFile = null;
+  let cameraStream = null;
+
+  async function openCameraCapture() {
+    openModal('cameraCapture');
+    const video = document.querySelector('[data-cam-video]');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showToast('Camera not supported on this device');
+      closeAllModals();
+      return;
+    }
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      });
+      if (video) {
+        video.srcObject = cameraStream;
+        await video.play().catch(() => {});
+      }
+    } catch (err) {
+      showToast('Camera access denied');
+      stopCameraStream();
+      closeAllModals();
+    }
+  }
+
+  function stopCameraStream() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    const video = document.querySelector('[data-cam-video]');
+    if (video) video.srcObject = null;
+  }
+
+  function dataUrlToFile(dataUrl, filename) {
+    const arr = dataUrl.split(',');
+    const m = arr[0].match(/:(.*?);/);
+    const mime = m ? m[1] : 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8 = new Uint8Array(n);
+    while (n--) u8[n] = bstr.charCodeAt(n);
+    return new File([u8], filename, { type: mime });
+  }
+
+  function captureFromCamera() {
+    const video = document.querySelector('[data-cam-video]');
+    if (!video || !video.videoWidth) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const ts = Date.now();
+    const file = dataUrlToFile(dataUrl, 'capture_' + ts + '.jpg');
+
+    stopCameraStream();
+    closeAllModals();
+
+    // Open the upload dialog with the captured photo as preview
+    resetImageUploadDialog();
+    openModal('imageUpload');
+    icPendingFile = file;
+    const nameInp = document.querySelector('[data-iu-name]');
+    const okBtn = document.querySelector('[data-iu-ok]');
+    const previewWrap = document.querySelector('[data-iu-preview-wrap]');
+    const previewImg = document.querySelector('[data-iu-preview]');
+    const browseWrap = document.querySelector('[data-iu-browse-wrap]');
+    if (nameInp) nameInp.value = file.name;
+    if (okBtn) okBtn.removeAttribute('disabled');
+    if (browseWrap) browseWrap.hidden = true;
+    if (previewImg) previewImg.src = dataUrl;
+    if (previewWrap) previewWrap.hidden = false;
+  }
 
   function openImageUploadDialog() {
     resetImageUploadDialog();
@@ -1217,14 +1292,25 @@
       openImageUploadDialog();
       return;
     }
-    // Image Capture (camera) -> open dialog + trigger camera input
+    // Image Capture (live webcam) -> open camera modal
     if (e.target.closest('[data-ic-image-capture]')) {
       e.preventDefault();
       const menu = document.querySelector('[data-ic-more-menu]');
       if (menu) menu.hidden = true;
-      openImageUploadDialog();
-      const camInput = document.querySelector('[data-ic-camera]');
-      if (camInput) camInput.click();
+      openCameraCapture();
+      return;
+    }
+    // Camera modal · Capture button -> snap photo, open upload modal
+    if (e.target.closest('[data-cam-capture]')) {
+      e.preventDefault();
+      captureFromCamera();
+      return;
+    }
+    // Camera modal · Cancel
+    if (e.target.closest('[data-cam-cancel]')) {
+      e.preventDefault();
+      stopCameraStream();
+      closeAllModals();
       return;
     }
     // Image Capture · Upload (commit list to Attachment List, navigate back)
@@ -1896,11 +1982,9 @@
   // Pre-render PO list (kept for first navigation after submit)
   renderPoList({ po: '', vendor: '' });
 
-  // Wire image-capture file inputs (browse + camera)
+  // Wire image-capture file input (Browse only — camera handled via getUserMedia modal)
   const icFileInput = document.querySelector('[data-ic-file]');
   if (icFileInput) icFileInput.addEventListener('change', onIcFileChange);
-  const icCamInput = document.querySelector('[data-ic-camera]');
-  if (icCamInput) icCamInput.addEventListener('change', onIcFileChange);
 
   // On every page load / refresh: always start on welcome screen, clear any
   // deep-link hash so URL doesn't carry previous state.
