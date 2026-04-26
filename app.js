@@ -36,7 +36,7 @@
   const screens = document.querySelectorAll('.screen');
   const modals  = document.querySelectorAll('.modal');
 
-  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item']);
+  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items']);
   function syncBodyBg(id) {
     if (LIGHT_SCREENS.has(id)) {
       document.body.setAttribute('data-screen-bg', 'light');
@@ -220,11 +220,39 @@
 
   function openDocHeader(row, origin) {
     docHeaderOrigin = origin || 'selection';
+    currentPo = row.number || '';
     const poEl = document.querySelector('[data-doc-po]');
     const vendorEl = document.querySelector('[data-doc-vendor]');
     if (poEl) poEl.textContent = row.number || '';
     if (vendorEl) vendorEl.textContent = row.vendor || '';
     go('doc-header');
+  }
+
+  // ================= SELECTED ITEMS (cart) =================
+  let currentPo = '';
+  let cartItems = [];
+
+  function renderSelectedItems() {
+    const poEl = document.querySelector('[data-si-po]');
+    if (poEl) poEl.textContent = currentPo || '';
+    const listEl = document.querySelector('[data-si-list]');
+    if (!listEl) return;
+    let html = '';
+    cartItems.forEach(it => {
+      html += '<div class="si-row">';
+      html += '  <div class="si-row-main">';
+      html += '    <div class="si-row-top"><div class="si-row-label">Item</div><div class="si-row-value">' + escHtml(it.item) + '</div></div>';
+      html += '    <div class="si-row-grid">';
+      html += '      <div class="si-row-field"><div class="si-row-label">Material</div><div class="si-row-value">' + escHtml(it.material) + '</div></div>';
+      html += '      <div class="si-row-field"><div class="si-row-label">Description</div><div class="si-row-value">' + escHtml(it.desc) + '</div></div>';
+      html += '      <div class="si-row-field"><div class="si-row-label">Quantity</div><div class="si-row-value">' + escHtml(it.qty) + '</div></div>';
+      html += '      <div class="si-row-field"><div class="si-row-label">Base Unit</div><div class="si-row-value">' + escHtml(it.unit) + '</div></div>';
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <div class="si-row-chevron">' + CHEVRON_R_SVG + '</div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
   }
 
   // ================= CALENDAR =================
@@ -558,10 +586,14 @@
   })();
 
   // ================= EVENT DELEGATION =================
-  // PO list · live filter input
+  // PO list · live filter input + Process Item numeric qty filter
   document.addEventListener('input', (e) => {
     if (e.target && e.target.matches && e.target.matches('[data-po-filter]')) {
       renderPoList();
+    }
+    if (e.target && e.target.matches && e.target.matches('[data-pi-input-qty]')) {
+      const cleaned = e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+      if (cleaned !== e.target.value) e.target.value = cleaned;
     }
   });
 
@@ -764,8 +796,46 @@
       return;
     }
 
-    // Process item · Save (placeholder for future screen)
+    // Process item · Save -> add to cart, go to selected-items
     if (e.target.closest('[data-pi-save]')) {
+      e.preventDefault();
+      const qtyInput = document.querySelector('[data-pi-input-qty]');
+      const storageEl = document.querySelector('[data-pi-select-value]');
+      const qty = (qtyInput?.value || '').trim();
+      if (!qty || !/^[0-9]+(\.[0-9]+)?$/.test(qty) || parseFloat(qty) <= 0) {
+        if (qtyInput) qtyInput.focus();
+        return;
+      }
+      const item = (document.querySelector('[data-pi-item]')?.textContent || '').trim();
+      const material = (document.querySelector('[data-pi-material]')?.textContent || '').trim();
+      const desc = (document.querySelector('[data-pi-desc]')?.textContent || '').trim();
+      const unit = (document.querySelector('[data-pi-unit]')?.textContent || '').trim();
+      const storage = storageEl ? storageEl.textContent.trim() : '';
+      cartItems = [{ item, material, desc, qty, unit, storage }];
+      renderSelectedItems();
+      go('selected-items');
+      return;
+    }
+
+    // Selected-items · summary toggle
+    const siSumToggle = e.target.closest('[data-si-summary-toggle]');
+    if (siSumToggle) {
+      e.preventDefault();
+      const expanded = siSumToggle.getAttribute('aria-expanded') !== 'false';
+      siSumToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      const sum = document.querySelector('[data-si-summary]');
+      if (sum) sum.hidden = expanded;
+      return;
+    }
+
+    // Selected-items · Post (placeholder for next screen)
+    if (e.target.closest('[data-si-post]')) {
+      e.preventDefault();
+      return;
+    }
+
+    // Selected-items · more menu (placeholder)
+    if (e.target.closest('[data-si-more]')) {
       e.preventDefault();
       return;
     }

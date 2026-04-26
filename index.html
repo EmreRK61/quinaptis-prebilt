@@ -486,7 +486,7 @@
       <div class="pi-grid pi-grid-2">
         <div class="pi-field">
           <label>Quantity:<span class="pi-required">*</span></label>
-          <input type="text" class="pi-input" data-pi-input-qty inputmode="decimal" autocomplete="off" spellcheck="false">
+          <input type="text" class="pi-input" data-pi-input-qty inputmode="decimal" pattern="[0-9]*\.?[0-9]*" autocomplete="off" spellcheck="false">
         </div>
         <div class="pi-field">
           <label>Storage Location:<span class="pi-required">*</span></label>
@@ -533,6 +533,61 @@
           <path d="M2 4h3l2.5 11h11l2-7.5H6"></path>
         </svg>
         <span>Save</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 12 · SELECTED ITEMS (cart) ============ -->
+  <section class="screen" data-screen="selected-items">
+    <header class="app-header app-header-slim">
+      <button class="icon-btn back-btn" data-goto="process-item" aria-label="Navigate back">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span class="tip tip-below tip-anchor-left">Navigate back</span>
+      </button>
+      <span class="sel-breadcrumb">Goods Receipt</span>
+      <div class="app-title sel-title" data-debug-title data-debug-page="oPage5000">Selected Items</div>
+      <div class="app-header-right">
+        <button class="icon-btn info-btn" data-modal="infoSelectedItems" aria-label="App Description">
+          <span class="info-letter">i</span>
+          <span class="tip tip-below tip-anchor-right">App Description</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="si-body">
+      <button class="po-summary-toggle si-summary-toggle" data-si-summary-toggle aria-expanded="true">
+        <svg class="po-summary-caret" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(0deg)">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+        <span>Summary</span>
+      </button>
+      <div class="si-summary" data-si-summary>
+        <div class="si-summary-field">
+          <label>PO Number:</label>
+          <div class="si-summary-value" data-si-po>&nbsp;</div>
+        </div>
+      </div>
+
+      <div class="si-list" data-si-list></div>
+    </div>
+
+    <div class="si-toolbar">
+      <button class="si-more-btn" data-si-more aria-label="More options">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="6" r="1.2" fill="currentColor"></circle>
+          <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
+          <circle cx="12" cy="18" r="1.2" fill="currentColor"></circle>
+        </svg>
+      </button>
+      <button class="si-post-btn" data-si-post>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+          <polyline points="7 3 7 9 15 9 15 3"></polyline>
+          <rect x="7" y="13" width="10" height="6"></rect>
+        </svg>
+        <span>Post</span>
       </button>
     </div>
   </section>
