@@ -1205,13 +1205,47 @@
     }
     if (e.target.closest('[data-ic-more]')) {
       e.preventDefault();
+      const menu = document.querySelector('[data-ic-more-menu]');
+      if (menu) menu.hidden = !menu.hidden;
+      return;
+    }
+    if (e.target.closest('[data-ic-upload-img]')) {
+      e.preventDefault();
+      const menu = document.querySelector('[data-ic-more-menu]');
+      if (menu) menu.hidden = true;
       openImageUploadDialog();
       return;
     }
+    // Image Capture · Upload (commit list to Attachment List, navigate back)
     if (e.target.closest('[data-ic-upload]')) {
       e.preventDefault();
-      openImageUploadDialog();
+      if (!icList.length) {
+        go('document-capture');
+        return;
+      }
+      icList.forEach(it => {
+        dcUploads.push({
+          kind: 'img',
+          title: it.title,
+          createdBy: it.createdBy,
+          dataUrl: it.dataUrl,
+          fileType: it.fileType,
+          dateDdMmYyyy: it.dateDdMmYyyy
+        });
+      });
+      icList = [];
+      renderIcList();
+      renderDcUploads();
+      go('document-capture');
       return;
+    }
+    // Close ic-more-menu when clicking outside
+    const icMenu = document.querySelector('[data-ic-more-menu]');
+    if (icMenu && !icMenu.hidden) {
+      const wrap = icMenu.closest('.dc-more-wrap');
+      if (wrap && !wrap.contains(e.target)) {
+        icMenu.hidden = true;
+      }
     }
     // Image Upload modal · Browse -> trigger file picker
     if (e.target.closest('[data-iu-browse]')) {
@@ -1375,30 +1409,36 @@
       return;
     }
 
-    // Document Capture · uploaded sig row -> Display screen with signer + drawn sig
+    // Document Capture · uploaded row -> Display screen (img: just image; sig: signer + image)
     const dcUpRow = e.target.closest('[data-dc-upload-row]');
     if (dcUpRow) {
       e.preventDefault();
       const idx = parseInt(dcUpRow.dataset.dcUploadRow, 10);
       const entry = dcUploads[idx];
       if (entry) {
-        const nameEl = document.querySelector('[data-img-disp-name]');
-        const typeEl = document.querySelector('[data-img-disp-type]');
-        const palletEl = document.querySelector('[data-img-disp-pallet]');
-        const sigEl = document.querySelector('[data-img-disp-sig]');
-        const upSigEl = document.querySelector('[data-img-disp-uploaded-sig]');
-        const upSigner = document.querySelector('[data-up-sig-signer]');
-        const upDate = document.querySelector('[data-up-sig-date]');
-        const upImg = document.querySelector('[data-up-sig-img]');
-        if (nameEl) nameEl.textContent = entry.title;
-        if (typeEl) typeEl.textContent = 'JPG';
-        if (palletEl) palletEl.hidden = true;
-        if (sigEl) sigEl.hidden = true;
-        if (upSigEl) upSigEl.hidden = false;
-        if (upSigner) upSigner.textContent = entry.signee || '';
-        if (upDate) upDate.textContent = entry.dateDdMmYyyy || '';
-        if (upImg) upImg.src = entry.dataUrl || '';
-        go('image-display');
+        if (entry.kind === 'img') {
+          const ivImg = document.querySelector('[data-iv-img]');
+          if (ivImg) ivImg.src = entry.dataUrl || '';
+          openModal('imageView');
+        } else {
+          const nameEl = document.querySelector('[data-img-disp-name]');
+          const typeEl = document.querySelector('[data-img-disp-type]');
+          const palletEl = document.querySelector('[data-img-disp-pallet]');
+          const sigEl = document.querySelector('[data-img-disp-sig]');
+          const upSigEl = document.querySelector('[data-img-disp-uploaded-sig]');
+          const upSigner = document.querySelector('[data-up-sig-signer]');
+          const upDate = document.querySelector('[data-up-sig-date]');
+          const upImg = document.querySelector('[data-up-sig-img]');
+          if (nameEl) nameEl.textContent = entry.title;
+          if (typeEl) typeEl.textContent = 'JPG';
+          if (palletEl) palletEl.hidden = true;
+          if (sigEl) sigEl.hidden = true;
+          if (upSigEl) upSigEl.hidden = false;
+          if (upSigner) upSigner.textContent = entry.signee || '';
+          if (upDate) upDate.textContent = entry.dateDdMmYyyy || '';
+          if (upImg) upImg.src = entry.dataUrl || '';
+          go('image-display');
+        }
       }
       return;
     }
