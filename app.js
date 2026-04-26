@@ -950,13 +950,14 @@
       return;
     }
 
-    // Selected-items · Empty Basket -> clear cart, stay on screen
+    // Selected-items · Empty Basket -> clear cart, go back to doc-header
     if (e.target.closest('[data-si-empty]')) {
       e.preventDefault();
       const menu = document.querySelector('[data-si-more-menu]');
       if (menu) menu.hidden = true;
       cartItems = [];
       renderSelectedItems();
+      go('doc-header');
       return;
     }
 
