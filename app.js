@@ -276,13 +276,12 @@
   let cameraStream = null;
 
   async function openCameraCapture() {
-    openModal('cameraCapture');
-    const video = document.querySelector('[data-cam-video]');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      showToast('Camera not supported on this device');
-      closeAllModals();
+      showToast('Camera API not available');
       return;
     }
+    openModal('cameraCapture');
+    const video = document.querySelector('[data-cam-video]');
     try {
       cameraStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' } },
@@ -293,7 +292,8 @@
         await video.play().catch(() => {});
       }
     } catch (err) {
-      showToast('Camera access denied');
+      console.error('getUserMedia failed:', err && err.name, err && err.message);
+      showToast('Camera error: ' + (err && err.name ? err.name : 'unknown'));
       stopCameraStream();
       closeAllModals();
     }
