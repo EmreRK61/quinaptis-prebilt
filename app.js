@@ -240,6 +240,32 @@
   let sigPadHasContent = false;
   let sigList = [];
 
+  // ================= DOC CAPTURE UPLOADS =================
+  const DC_STATIC_COUNT = 2;
+  let dcUploads = [];
+
+  function renderDcUploads() {
+    const listEl = document.querySelector('[data-dc-list]');
+    if (!listEl) return;
+    listEl.querySelectorAll('[data-dc-upload-row]').forEach(el => el.remove());
+    let html = '';
+    dcUploads.forEach((u, idx) => {
+      html += '<div class="dc-row" data-dc-upload-row="' + idx + '">';
+      html += '  <div class="dc-row-main">';
+      html += '    <div class="dc-row-title">' + escHtml(u.title) + '</div>';
+      html += '    <div class="dc-row-sub">Created By</div>';
+      html += '    <div class="dc-row-value">' + escHtml(u.createdBy) + '</div>';
+      html += '  </div>';
+      html += '  <div class="dc-row-chevron">';
+      html += '    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+      html += '  </div>';
+      html += '</div>';
+    });
+    listEl.insertAdjacentHTML('beforeend', html);
+    const totalEl = document.querySelector('[data-dc-total]');
+    if (totalEl) totalEl.textContent = (DC_STATIC_COUNT + dcUploads.length).toString();
+  }
+
   function renderSigList() {
     const listEl = document.querySelector('[data-sc-list]');
     const totalEl = document.querySelector('[data-sc-total]');
@@ -1086,6 +1112,21 @@
     }
     if (e.target.closest('[data-sc-upload]')) {
       e.preventDefault();
+      if (!sigList.length) return;
+      sigList.forEach(s => {
+        dcUploads.push({
+          kind: 'sig',
+          title: 'SIG ' + s.title,
+          createdBy: 'QUINAPTISTEAM',
+          signee: s.signee,
+          dataUrl: s.dataUrl,
+          dateDdMmYyyy: s.dateDdMmYyyy
+        });
+      });
+      sigList = [];
+      renderSigList();
+      renderDcUploads();
+      go('document-capture');
       return;
     }
     // Signature modal · OK -> save entry to list, close
@@ -1126,7 +1167,25 @@
       return;
     }
 
-    // Document Capture · row click -> Display screen (img or sig)
+    // Document Capture · uploaded sig row -> view signature modal
+    const dcUpRow = e.target.closest('[data-dc-upload-row]');
+    if (dcUpRow) {
+      e.preventDefault();
+      const idx = parseInt(dcUpRow.dataset.dcUploadRow, 10);
+      const entry = dcUploads[idx];
+      if (entry) {
+        const signerEl = document.querySelector('[data-sig-view-signer]');
+        const dateEl = document.querySelector('[data-sig-view-date]');
+        const imgEl = document.querySelector('[data-sig-view-img]');
+        if (signerEl) signerEl.textContent = entry.signee || '';
+        if (dateEl) dateEl.textContent = entry.dateDdMmYyyy || '';
+        if (imgEl) imgEl.src = entry.dataUrl || '';
+        openModal('signatureView');
+      }
+      return;
+    }
+
+    // Document Capture · static row click -> Display screen (img or sig)
     const dcRow = e.target.closest('[data-dc-row]');
     if (dcRow) {
       e.preventDefault();
