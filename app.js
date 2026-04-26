@@ -272,29 +272,50 @@
     listEl.innerHTML = html;
   }
 
+  let icPendingFile = null;
+
+  function openImageUploadDialog() {
+    resetImageUploadDialog();
+    openModal('imageUpload');
+  }
+  function resetImageUploadDialog() {
+    const nameInp = document.querySelector('[data-iu-name]');
+    const okBtn = document.querySelector('[data-iu-ok]');
+    if (nameInp) nameInp.value = '';
+    if (okBtn) okBtn.setAttribute('disabled', '');
+    icPendingFile = null;
+  }
+
+  function addIcEntryFromFile(file) {
+    if (icList.length >= IC_MAX) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const d = new Date();
+      const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+      const ext = (file.name.split('.').pop() || 'JPG').toUpperCase();
+      icList.push({
+        title: 'IMG QUINAPTISTEAM ' + yyyymmdd,
+        createdBy: 'QUINAPTISTEAM',
+        createdOn: d.toDateString(),
+        dateDdMmYyyy: pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(),
+        timeCreated: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true }),
+        dataUrl: ev.target.result,
+        fileType: ext
+      });
+      renderIcList();
+    };
+    reader.readAsDataURL(file);
+  }
+
   function onIcFileChange(e) {
-    const files = Array.from(e.target.files || []);
-    files.forEach(file => {
-      if (icList.length >= IC_MAX) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const d = new Date();
-        const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
-        const ext = (file.name.split('.').pop() || 'JPG').toUpperCase();
-        icList.push({
-          title: 'IMG QUINAPTISTEAM ' + yyyymmdd,
-          createdBy: 'QUINAPTISTEAM',
-          createdOn: d.toDateString(),
-          dateDdMmYyyy: pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(),
-          timeCreated: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true }),
-          dataUrl: ev.target.result,
-          fileType: ext
-        });
-        renderIcList();
-      };
-      reader.readAsDataURL(file);
-    });
-    // Reset so selecting same file again still triggers change
+    const file = (e.target.files || [])[0];
+    if (file) {
+      icPendingFile = file;
+      const nameInp = document.querySelector('[data-iu-name]');
+      const okBtn = document.querySelector('[data-iu-ok]');
+      if (nameInp) nameInp.value = file.name;
+      if (okBtn) okBtn.removeAttribute('disabled');
+    }
     e.target.value = '';
   }
 
@@ -1167,15 +1188,40 @@
     }
     if (e.target.closest('[data-ic-more]')) {
       e.preventDefault();
-      // For now, kebab on image-capture re-triggers the file picker
-      const fileInput = document.querySelector('[data-ic-file]');
-      if (fileInput) fileInput.click();
+      openImageUploadDialog();
       return;
     }
     if (e.target.closest('[data-ic-upload]')) {
       e.preventDefault();
+      openImageUploadDialog();
+      return;
+    }
+    // Image Upload modal · Browse -> trigger file picker
+    if (e.target.closest('[data-iu-browse]')) {
+      e.preventDefault();
       const fileInput = document.querySelector('[data-ic-file]');
       if (fileInput) fileInput.click();
+      return;
+    }
+    // Image Upload modal · OK -> add staged file to list
+    if (e.target.closest('[data-iu-ok]')) {
+      e.preventDefault();
+      const okBtn = e.target.closest('[data-iu-ok]');
+      if (okBtn.hasAttribute('disabled')) return;
+      if (icPendingFile) {
+        addIcEntryFromFile(icPendingFile);
+        icPendingFile = null;
+      }
+      resetImageUploadDialog();
+      closeAllModals();
+      return;
+    }
+    // Image Upload modal · Cancel -> close
+    if (e.target.closest('[data-iu-cancel]')) {
+      e.preventDefault();
+      icPendingFile = null;
+      resetImageUploadDialog();
+      closeAllModals();
       return;
     }
     // Image Capture · row delete X

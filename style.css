@@ -2322,6 +2322,30 @@ a:hover { text-decoration: underline; }
   align-items: center;
   gap: 6px;
 }
+.iu-browse-wrap {
+  display: flex;
+  margin-top: 4px;
+}
+.iu-browse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5fb;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--q-navy, #1C3D6E);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.iu-browse-btn:hover { background: #e6edf7; }
+.btn-primary[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .sig-view-body {
   min-height: 380px;
 }
