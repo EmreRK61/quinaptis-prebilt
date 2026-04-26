@@ -2125,6 +2125,7 @@ a:hover { text-decoration: underline; }
   padding: 24px;
   background: #fff;
 }
+.img-disp-content[hidden] { display: none; }
 .img-disp-img {
   max-width: 65%;
   max-height: 70%;
