@@ -233,6 +233,84 @@
     go('doc-header');
   }
 
+  // ================= SIGNATURE PAD =================
+  let sigPadInitDone = false;
+  let sigPadDrawing = false;
+  let sigPadHasContent = false;
+
+  function getSigPadCtx() {
+    const canvas = document.querySelector('[data-sig-pad]');
+    if (!canvas) return null;
+    return canvas.getContext('2d');
+  }
+
+  function resizeSigPad() {
+    const canvas = document.querySelector('[data-sig-pad]');
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const dpr = window.devicePixelRatio || 1;
+    const targetW = Math.round(rect.width * dpr);
+    const targetH = Math.round(rect.height * dpr);
+    if (canvas.width === targetW && canvas.height === targetH) return;
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#111418';
+    sigPadHasContent = false;
+  }
+
+  function clearSigPad() {
+    const canvas = document.querySelector('[data-sig-pad]');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    sigPadHasContent = false;
+  }
+
+  function sigPadPos(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+  }
+
+  function initSigPad() {
+    if (sigPadInitDone) return;
+    const canvas = document.querySelector('[data-sig-pad]');
+    if (!canvas) return;
+    sigPadInitDone = true;
+
+    const start = (e) => {
+      e.preventDefault();
+      resizeSigPad();
+      sigPadDrawing = true;
+      sigPadHasContent = true;
+      const ctx = canvas.getContext('2d');
+      const p = sigPadPos(e, canvas);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    };
+    const move = (e) => {
+      if (!sigPadDrawing) return;
+      e.preventDefault();
+      const ctx = canvas.getContext('2d');
+      const p = sigPadPos(e, canvas);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    };
+    const end = () => { sigPadDrawing = false; };
+
+    canvas.addEventListener('pointerdown', start);
+    canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('pointerleave', end);
+  }
+
   // ================= MESSAGES MODAL =================
   const THUMBS_UP_PATHS = '<path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>';
   const THUMBS_DOWN_PATHS = '<path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z"></path>';
@@ -886,6 +964,8 @@
       e.preventDefault();
       go('signature-capture');
       openModal('signatureCapture');
+      initSigPad();
+      requestAnimationFrame(() => { resizeSigPad(); clearSigPad(); });
       return;
     }
 
@@ -904,6 +984,8 @@
       if (menu) menu.hidden = true;
       go('signature-capture');
       openModal('signatureCapture');
+      initSigPad();
+      requestAnimationFrame(() => { resizeSigPad(); clearSigPad(); });
       return;
     }
 
@@ -933,14 +1015,36 @@
     if (e.target.closest('[data-sc-add-sig]')) {
       e.preventDefault();
       openModal('signatureCapture');
+      initSigPad();
+      requestAnimationFrame(() => { resizeSigPad(); clearSigPad(); });
       return;
     }
     if (e.target.closest('[data-sc-upload]')) {
       e.preventDefault();
       return;
     }
-    if (e.target.closest('[data-sig-ok]') || e.target.closest('[data-sig-cancel]')) {
+    // Signature modal · OK -> save (increment total, close)
+    if (e.target.closest('[data-sig-ok]')) {
       e.preventDefault();
+      if (sigPadHasContent) {
+        const totalEl = document.querySelector('[data-sc-total]');
+        if (totalEl) {
+          const cur = parseInt(totalEl.textContent, 10) || 0;
+          totalEl.textContent = (cur + 1).toString();
+        }
+      }
+      const nameInp = document.querySelector('[data-sig-name]');
+      if (nameInp) nameInp.value = '';
+      clearSigPad();
+      closeAllModals();
+      return;
+    }
+    // Signature modal · Cancel -> clear pad + close
+    if (e.target.closest('[data-sig-cancel]')) {
+      e.preventDefault();
+      const nameInp = document.querySelector('[data-sig-name]');
+      if (nameInp) nameInp.value = '';
+      clearSigPad();
       closeAllModals();
       return;
     }
