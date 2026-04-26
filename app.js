@@ -254,6 +254,11 @@
   function renderSelectedItems() {
     const poEl = document.querySelector('[data-si-po]');
     if (poEl) poEl.textContent = currentPo || '';
+    // Always start with summary collapsed
+    const sumToggle = document.querySelector('[data-si-summary-toggle]');
+    const sumEl = document.querySelector('[data-si-summary]');
+    if (sumToggle) sumToggle.setAttribute('aria-expanded', 'false');
+    if (sumEl) sumEl.hidden = true;
     const listEl = document.querySelector('[data-si-list]');
     if (!listEl) return;
     let html = '';
