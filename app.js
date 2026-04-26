@@ -1145,9 +1145,13 @@
     document.addEventListener('touchcancel', endGesture, { passive: true });
   })();
 
-  // Pre-render PO list so hash-deep-links to #po-list show content immediately
+  // Pre-render PO list (kept for first navigation after submit)
   renderPoList({ po: '', vendor: '' });
 
-  const hash = location.hash.slice(1);
-  if (hash) go(hash);
+  // On every page load / refresh: always start on welcome screen, clear any
+  // deep-link hash so URL doesn't carry previous state.
+  if (location.hash) {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+  go('welcome');
 })();
