@@ -2326,6 +2326,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   margin-top: 4px;
 }
+.iu-browse-wrap[hidden] { display: none; }
 .iu-browse-btn {
   display: inline-flex;
   align-items: center;

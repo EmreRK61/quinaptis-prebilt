@@ -283,10 +283,12 @@
     const okBtn = document.querySelector('[data-iu-ok]');
     const previewWrap = document.querySelector('[data-iu-preview-wrap]');
     const previewImg = document.querySelector('[data-iu-preview]');
+    const browseWrap = document.querySelector('[data-iu-browse-wrap]');
     if (nameInp) nameInp.value = '';
     if (okBtn) okBtn.setAttribute('disabled', '');
     if (previewWrap) previewWrap.hidden = true;
     if (previewImg) previewImg.src = '';
+    if (browseWrap) browseWrap.hidden = false;
     icPendingFile = null;
   }
 
@@ -319,8 +321,10 @@
       const okBtn = document.querySelector('[data-iu-ok]');
       const previewWrap = document.querySelector('[data-iu-preview-wrap]');
       const previewImg = document.querySelector('[data-iu-preview]');
+      const browseWrap = document.querySelector('[data-iu-browse-wrap]');
       if (nameInp) nameInp.value = file.name;
       if (okBtn) okBtn.removeAttribute('disabled');
+      if (browseWrap) browseWrap.hidden = true;
       // Show preview
       const reader = new FileReader();
       reader.onload = (ev) => {
