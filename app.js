@@ -1167,20 +1167,30 @@
       return;
     }
 
-    // Document Capture · uploaded sig row -> view signature modal
+    // Document Capture · uploaded sig row -> Display screen with signer + drawn sig
     const dcUpRow = e.target.closest('[data-dc-upload-row]');
     if (dcUpRow) {
       e.preventDefault();
       const idx = parseInt(dcUpRow.dataset.dcUploadRow, 10);
       const entry = dcUploads[idx];
       if (entry) {
-        const signerEl = document.querySelector('[data-sig-view-signer]');
-        const dateEl = document.querySelector('[data-sig-view-date]');
-        const imgEl = document.querySelector('[data-sig-view-img]');
-        if (signerEl) signerEl.textContent = entry.signee || '';
-        if (dateEl) dateEl.textContent = entry.dateDdMmYyyy || '';
-        if (imgEl) imgEl.src = entry.dataUrl || '';
-        openModal('signatureView');
+        const nameEl = document.querySelector('[data-img-disp-name]');
+        const typeEl = document.querySelector('[data-img-disp-type]');
+        const palletEl = document.querySelector('[data-img-disp-pallet]');
+        const sigEl = document.querySelector('[data-img-disp-sig]');
+        const upSigEl = document.querySelector('[data-img-disp-uploaded-sig]');
+        const upSigner = document.querySelector('[data-up-sig-signer]');
+        const upDate = document.querySelector('[data-up-sig-date]');
+        const upImg = document.querySelector('[data-up-sig-img]');
+        if (nameEl) nameEl.textContent = entry.title;
+        if (typeEl) typeEl.textContent = 'JPG';
+        if (palletEl) palletEl.hidden = true;
+        if (sigEl) sigEl.hidden = true;
+        if (upSigEl) upSigEl.hidden = false;
+        if (upSigner) upSigner.textContent = entry.signee || '';
+        if (upDate) upDate.textContent = entry.dateDdMmYyyy || '';
+        if (upImg) upImg.src = entry.dataUrl || '';
+        go('image-display');
       }
       return;
     }
@@ -1194,6 +1204,8 @@
       const typeEl = document.querySelector('[data-img-disp-type]');
       const palletEl = document.querySelector('[data-img-disp-pallet]');
       const sigEl = document.querySelector('[data-img-disp-sig]');
+      const upSigEl = document.querySelector('[data-img-disp-uploaded-sig]');
+      if (upSigEl) upSigEl.hidden = true;
       if (kind === 'sig') {
         if (nameEl) nameEl.textContent = 'Demo SIG';
         if (typeEl) typeEl.textContent = 'JPG';
