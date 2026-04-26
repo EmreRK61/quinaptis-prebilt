@@ -298,8 +298,8 @@
       const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
       const ext = (file.name.split('.').pop() || 'JPG').toUpperCase();
       icList.push({
-        title: 'IMG QUINAPTISTEAM ' + yyyymmdd,
-        createdBy: 'QUINAPTISTEAM',
+        title: '.' + ext,
+        createdBy: '',
         createdOn: d.toDateString(),
         dateDdMmYyyy: pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(),
         timeCreated: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true }),
@@ -1248,34 +1248,16 @@
       }
       return;
     }
-    // Image Capture · row click view
+    // Image Capture · row click -> open image view modal
     const icViewRow = e.target.closest('[data-ic-row-view]');
     if (icViewRow) {
       e.preventDefault();
       const idx = parseInt(icViewRow.dataset.icRowView, 10);
       const entry = icList[idx];
       if (entry) {
-        const nameEl = document.querySelector('[data-img-disp-name]');
-        const typeEl = document.querySelector('[data-img-disp-type]');
-        const palletEl = document.querySelector('[data-img-disp-pallet]');
-        const sigEl = document.querySelector('[data-img-disp-sig]');
-        const upSigEl = document.querySelector('[data-img-disp-uploaded-sig]');
-        if (palletEl) palletEl.hidden = true;
-        if (sigEl) sigEl.hidden = true;
-        if (upSigEl) upSigEl.hidden = true;
-        // Use uploaded-sig section but show only image (re-purpose)
-        if (upSigEl) {
-          upSigEl.hidden = false;
-          const upSigner = document.querySelector('[data-up-sig-signer]');
-          const upDate = document.querySelector('[data-up-sig-date]');
-          const upImg = document.querySelector('[data-up-sig-img]');
-          if (upSigner) upSigner.textContent = '';
-          if (upDate) upDate.textContent = '';
-          if (upImg) upImg.src = entry.dataUrl || '';
-        }
-        if (nameEl) nameEl.textContent = entry.title;
-        if (typeEl) typeEl.textContent = entry.fileType || 'JPG';
-        go('image-display');
+        const ivImg = document.querySelector('[data-iv-img]');
+        if (ivImg) ivImg.src = entry.dataUrl || '';
+        openModal('imageView');
       }
       return;
     }

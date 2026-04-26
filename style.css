@@ -2358,6 +2358,18 @@ a:hover { text-decoration: underline; }
   max-height: 320px;
   object-fit: contain;
 }
+.iv-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 18px;
+}
+.iv-img {
+  max-width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+}
 .btn-primary[disabled] {
   opacity: 0.45;
   cursor: not-allowed;
