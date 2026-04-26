@@ -250,6 +250,40 @@
   // ================= SELECTED ITEMS (cart) =================
   let currentPo = '';
   let cartItems = [];
+  let editIndex = null;
+
+  function enterProcessItem(opts) {
+    opts = opts || {};
+    const qtyInput = document.querySelector('[data-pi-input-qty]');
+    const batchInput = document.querySelector('[data-pi-input-batch]');
+    const storageValEl = document.querySelector('[data-pi-select-value]');
+    const piBackBtn = document.querySelector('[data-pi-back]');
+    const errMsg = document.querySelector('[data-pi-qty-error]');
+
+    if (qtyInput) {
+      qtyInput.classList.remove('error');
+      qtyInput.value = '';
+    }
+    if (batchInput) batchInput.value = '';
+    if (errMsg) errMsg.hidden = true;
+
+    if (typeof opts.editIdx === 'number' && cartItems[opts.editIdx]) {
+      const it = cartItems[opts.editIdx];
+      editIndex = opts.editIdx;
+      if (qtyInput) qtyInput.value = it.qty || '';
+      if (batchInput) batchInput.value = it.batch || '';
+      if (storageValEl && it.storage) storageValEl.textContent = it.storage;
+      // Sync the .selected class in dropdown
+      document.querySelectorAll('[data-pi-select-option]').forEach(li => {
+        li.classList.toggle('selected', li.getAttribute('data-pi-select-option') === it.storage);
+      });
+      if (piBackBtn) piBackBtn.dataset.goto = 'selected-items';
+    } else {
+      editIndex = null;
+      if (piBackBtn) piBackBtn.dataset.goto = 'doc-header';
+    }
+    go('process-item');
+  }
 
   function renderSelectedItems() {
     const poEl = document.querySelector('[data-si-po]');
@@ -262,8 +296,8 @@
     const listEl = document.querySelector('[data-si-list]');
     if (!listEl) return;
     let html = '';
-    cartItems.forEach(it => {
-      html += '<div class="si-row">';
+    cartItems.forEach((it, idx) => {
+      html += '<div class="si-row" data-si-row="' + idx + '">';
       html += '  <div class="si-row-main">';
       html += '    <div class="si-row-top"><div class="si-row-label">Item</div><div class="si-row-value">' + escHtml(it.item) + '</div></div>';
       html += '    <div class="si-row-grid">';
@@ -785,10 +819,25 @@
       return;
     }
 
-    // Doc header · continue -> process item
+    // Doc header · continue -> process item (fresh entry)
     if (e.target.closest('[data-doc-continue]')) {
       e.preventDefault();
-      go('process-item');
+      enterProcessItem({});
+      return;
+    }
+
+    // Selected-items · click row -> edit in process-item
+    const siRow = e.target.closest('[data-si-row]');
+    if (siRow) {
+      e.preventDefault();
+      const idx = parseInt(siRow.dataset.siRow, 10);
+      enterProcessItem({ editIdx: idx });
+      return;
+    }
+
+    // Process item · more (placeholder)
+    if (e.target.closest('[data-pi-more]')) {
+      e.preventDefault();
       return;
     }
 
@@ -846,11 +895,22 @@
       const desc = (document.querySelector('[data-pi-desc]')?.textContent || '').trim();
       const unit = (document.querySelector('[data-pi-unit]')?.textContent || '').trim();
       const storage = storageEl ? storageEl.textContent.trim() : '';
-      cartItems.push({ item, material, desc, qty, unit, storage });
+      const batch = (document.querySelector('[data-pi-input-batch]')?.value || '').trim();
+      const entry = { item, material, desc, qty, unit, storage, batch };
+      if (editIndex !== null && cartItems[editIndex]) {
+        cartItems[editIndex] = entry;
+        editIndex = null;
+      } else {
+        cartItems.push(entry);
+      }
       // Clear inputs so next Save is a fresh entry
       qtyInput.value = '';
       const batchInput = document.querySelector('[data-pi-input-batch]');
       if (batchInput) batchInput.value = '';
+      // Reset back-btn target to doc-header (next process-item visit defaults
+      // to fresh-entry behaviour unless explicitly re-entered via row click)
+      const piBackBtn = document.querySelector('[data-pi-back]');
+      if (piBackBtn) piBackBtn.dataset.goto = 'doc-header';
       renderSelectedItems();
       go('selected-items');
       return;

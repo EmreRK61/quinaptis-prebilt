@@ -1832,7 +1832,8 @@ a:hover { text-decoration: underline; }
   border-top: 1px solid #1a1f2e;
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
-.si-more-btn {
+.si-more-btn,
+.pi-more-btn {
   background: transparent;
   border: none;
   color: #f1f3f7;
@@ -1845,7 +1846,11 @@ a:hover { text-decoration: underline; }
   margin: 0 auto;
   transition: background 0.15s ease;
 }
-.si-more-btn:hover { background: rgba(255,255,255,0.08); }
+.si-more-btn:hover,
+.pi-more-btn:hover { background: rgba(255,255,255,0.08); }
+.si-row { cursor: pointer; transition: background 0.12s ease; }
+.si-row:hover { background: #f7f9fc; }
+.si-row:active { background: #eef2f7; }
 .si-post-btn {
   display: inline-flex;
   align-items: center;
