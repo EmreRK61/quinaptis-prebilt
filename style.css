@@ -2130,9 +2130,15 @@ a:hover { text-decoration: underline; }
   max-height: 70%;
   object-fit: contain;
 }
+.img-disp-svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
 @media (max-width: 640px) {
   .img-disp-fields { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px; }
   .img-disp-img { max-width: 80%; }
+  .img-disp-svg { max-width: 100%; }
 }
 
 /* ========================================================
