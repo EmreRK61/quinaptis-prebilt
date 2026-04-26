@@ -931,8 +931,8 @@
     if (e.target.closest('[data-si-post]')) {
       e.preventDefault();
       if (!cartItems.length) return;
-      // Generate a 10-digit "material document number" starting with 5
-      const materialDoc = '5' + Math.floor(1000000000 + Math.random() * 9000000000).toString().slice(0, 9);
+      // Generate a 10-digit "material document number" — fixed prefix "50000" + 5 random digits
+      const materialDoc = '50000' + Math.floor(10000 + Math.random() * 90000).toString();
       // Remove the posted PO from in-memory list (resets on page refresh)
       const poIdx = PO_DATA.findIndex(r => r.number === currentPo);
       if (poIdx >= 0) PO_DATA.splice(poIdx, 1);
