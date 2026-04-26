@@ -234,9 +234,44 @@
   }
 
   // ================= SIGNATURE PAD =================
+  const SIG_MAX = 1;
   let sigPadInitDone = false;
   let sigPadDrawing = false;
   let sigPadHasContent = false;
+  let sigList = [];
+
+  function renderSigList() {
+    const listEl = document.querySelector('[data-sc-list]');
+    const totalEl = document.querySelector('[data-sc-total]');
+    const addBtn = document.querySelector('[data-sc-add-sig]');
+    if (totalEl) totalEl.textContent = sigList.length.toString();
+    if (addBtn) {
+      if (sigList.length >= SIG_MAX) addBtn.setAttribute('disabled', '');
+      else addBtn.removeAttribute('disabled');
+    }
+    if (!listEl) return;
+    let html = '';
+    sigList.forEach((s, idx) => {
+      html += '<div class="sc-row">';
+      html += '  <div class="sc-row-main">';
+      html += '    <div class="sc-row-title-label">Document Title</div>';
+      html += '    <div class="sc-row-title-value">' + escHtml(s.title) + '</div>';
+      html += '    <div class="sc-row-meta">';
+      html += '      <div><div class="sc-row-meta-label">Created By</div><div class="sc-row-meta-value">' + escHtml(s.createdBy) + '</div></div>';
+      html += '      <div><div class="sc-row-meta-label">Created On</div><div class="sc-row-meta-value">' + escHtml(s.createdOn) + '</div></div>';
+      html += '      <div><div class="sc-row-meta-label">Time Created</div><div class="sc-row-meta-value">' + escHtml(s.timeCreated) + '</div></div>';
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <div class="sc-row-actions">';
+      html += '    <div class="sc-row-chevron">' + CHEVRON_R_SVG + '</div>';
+      html += '    <button class="sc-row-delete" data-sc-delete="' + idx + '" aria-label="Delete signature">';
+      html += '      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>';
+      html += '    </button>';
+      html += '  </div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+  }
 
   function getSigPadCtx() {
     const canvas = document.querySelector('[data-sig-pad]');
@@ -1014,24 +1049,43 @@
     }
     if (e.target.closest('[data-sc-add-sig]')) {
       e.preventDefault();
+      const addBtn = e.target.closest('[data-sc-add-sig]');
+      if (addBtn.hasAttribute('disabled')) return;
       openModal('signatureCapture');
       initSigPad();
       requestAnimationFrame(() => { resizeSigPad(); clearSigPad(); });
+      return;
+    }
+    // Signature row · delete X
+    const sigDelBtn = e.target.closest('[data-sc-delete]');
+    if (sigDelBtn) {
+      e.preventDefault();
+      const idx = parseInt(sigDelBtn.dataset.scDelete, 10);
+      if (!isNaN(idx)) {
+        sigList.splice(idx, 1);
+        renderSigList();
+      }
       return;
     }
     if (e.target.closest('[data-sc-upload]')) {
       e.preventDefault();
       return;
     }
-    // Signature modal · OK -> save (increment total, close)
+    // Signature modal · OK -> save entry to list, close
     if (e.target.closest('[data-sig-ok]')) {
       e.preventDefault();
-      if (sigPadHasContent) {
-        const totalEl = document.querySelector('[data-sc-total]');
-        if (totalEl) {
-          const cur = parseInt(totalEl.textContent, 10) || 0;
-          totalEl.textContent = (cur + 1).toString();
-        }
+      if (sigPadHasContent && sigList.length < SIG_MAX) {
+        const nameInp = document.querySelector('[data-sig-name]');
+        const signee = (nameInp?.value || 'QUINAPTISTEAM').trim().toUpperCase() || 'QUINAPTISTEAM';
+        const d = new Date();
+        const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+        sigList.push({
+          title: signee + ' ' + yyyymmdd,
+          createdBy: 'QUINAPTISTEAM',
+          createdOn: d.toDateString(),
+          timeCreated: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
+        });
+        renderSigList();
       }
       const nameInp = document.querySelector('[data-sig-name]');
       if (nameInp) nameInp.value = '';
