@@ -2391,7 +2391,8 @@ a:hover { text-decoration: underline; }
 }
 .up-sig-content {
   flex-direction: column;
-  gap: 30px;
+  gap: 18px;
+  justify-content: flex-start;
 }
 .up-sig-info {
   font-size: 16px;
@@ -2406,6 +2407,8 @@ a:hover { text-decoration: underline; }
 }
 @media (max-width: 640px) {
   .up-sig-img { max-width: 80%; max-height: 35%; }
+  .up-sig-content { gap: 8px; padding-top: 6px; }
+  .up-sig-info { font-size: 14px; }
 }
 @media (max-width: 640px) {
   .img-disp-fields { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px; }
