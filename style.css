@@ -2185,7 +2185,10 @@ a:hover { text-decoration: underline; }
   padding: 14px 18px;
   background: #fff;
   border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.12s ease;
 }
+.sc-row:hover { background: #f7f9fc; }
 .sc-row-main { flex: 1; }
 .sc-row-title-label {
   font-size: 12px;
@@ -2300,6 +2303,26 @@ a:hover { text-decoration: underline; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+.sig-view-body {
+  min-height: 380px;
+}
+.sig-view-info {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.sig-view-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+.sig-view-img {
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
 }
 
 @media (max-width: 640px) {

@@ -252,7 +252,7 @@
     if (!listEl) return;
     let html = '';
     sigList.forEach((s, idx) => {
-      html += '<div class="sc-row">';
+      html += '<div class="sc-row" data-sc-row-view="' + idx + '">';
       html += '  <div class="sc-row-main">';
       html += '    <div class="sc-row-title-label">Document Title</div>';
       html += '    <div class="sc-row-title-value">' + escHtml(s.title) + '</div>';
@@ -1067,6 +1067,23 @@
       }
       return;
     }
+    // Signature row · click main area -> view signature modal
+    const sigViewRow = e.target.closest('[data-sc-row-view]');
+    if (sigViewRow) {
+      e.preventDefault();
+      const idx = parseInt(sigViewRow.dataset.scRowView, 10);
+      const entry = sigList[idx];
+      if (entry) {
+        const signerEl = document.querySelector('[data-sig-view-signer]');
+        const dateEl = document.querySelector('[data-sig-view-date]');
+        const imgEl = document.querySelector('[data-sig-view-img]');
+        if (signerEl) signerEl.textContent = entry.signee || '';
+        if (dateEl) dateEl.textContent = entry.dateDdMmYyyy || '';
+        if (imgEl) imgEl.src = entry.dataUrl || '';
+        openModal('signatureView');
+      }
+      return;
+    }
     if (e.target.closest('[data-sc-upload]')) {
       e.preventDefault();
       return;
@@ -1074,20 +1091,26 @@
     // Signature modal · OK -> save entry to list, close
     if (e.target.closest('[data-sig-ok]')) {
       e.preventDefault();
+      const nameInp = document.querySelector('[data-sig-name]');
       if (sigPadHasContent && sigList.length < SIG_MAX) {
-        const nameInp = document.querySelector('[data-sig-name]');
-        const signee = (nameInp?.value || 'QUINAPTISTEAM').trim().toUpperCase() || 'QUINAPTISTEAM';
+        const signeeRaw = (nameInp?.value || '').trim();
+        // Title: signee uppercase if provided, else default user; +YYYYMMDD
+        const titlePrefix = signeeRaw ? signeeRaw.toUpperCase() : 'QUINAPTISTEAM';
         const d = new Date();
         const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+        const canvas = document.querySelector('[data-sig-pad]');
+        const dataUrl = canvas ? canvas.toDataURL('image/png') : '';
         sigList.push({
-          title: signee + ' ' + yyyymmdd,
+          title: titlePrefix + ' ' + yyyymmdd,
+          signee: signeeRaw,
+          dataUrl: dataUrl,
           createdBy: 'QUINAPTISTEAM',
           createdOn: d.toDateString(),
+          dateDdMmYyyy: pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(),
           timeCreated: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
         });
         renderSigList();
       }
-      const nameInp = document.querySelector('[data-sig-name]');
       if (nameInp) nameInp.value = '';
       clearSigPad();
       closeAllModals();
