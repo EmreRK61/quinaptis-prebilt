@@ -36,7 +36,7 @@
   const screens = document.querySelectorAll('.screen');
   const modals  = document.querySelectorAll('.modal');
 
-  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture', 'image-display', 'signature-capture']);
+  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture', 'image-display', 'signature-capture', 'image-capture']);
   function syncBodyBg(id) {
     if (LIGHT_SCREENS.has(id)) {
       document.body.setAttribute('data-screen-bg', 'light');
@@ -239,6 +239,64 @@
   let sigPadDrawing = false;
   let sigPadHasContent = false;
   let sigList = [];
+
+  // ================= IMAGE CAPTURE =================
+  const IC_MAX = 2;
+  let icList = [];
+
+  function renderIcList() {
+    const totalEl = document.querySelector('[data-ic-total]');
+    if (totalEl) totalEl.textContent = icList.length.toString();
+    const listEl = document.querySelector('[data-ic-list]');
+    if (!listEl) return;
+    let html = '';
+    icList.forEach((it, idx) => {
+      html += '<div class="sc-row" data-ic-row-view="' + idx + '">';
+      html += '  <div class="sc-row-main">';
+      html += '    <div class="sc-row-title-label">Document Title</div>';
+      html += '    <div class="sc-row-title-value">' + escHtml(it.title) + '</div>';
+      html += '    <div class="sc-row-meta">';
+      html += '      <div><div class="sc-row-meta-label">Created By</div><div class="sc-row-meta-value">' + escHtml(it.createdBy) + '</div></div>';
+      html += '      <div><div class="sc-row-meta-label">Created On</div><div class="sc-row-meta-value">' + escHtml(it.createdOn) + '</div></div>';
+      html += '      <div><div class="sc-row-meta-label">Time Created</div><div class="sc-row-meta-value">' + escHtml(it.timeCreated) + '</div></div>';
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <div class="sc-row-actions">';
+      html += '    <div class="sc-row-chevron">' + CHEVRON_R_SVG + '</div>';
+      html += '    <button class="sc-row-delete" data-ic-delete="' + idx + '" aria-label="Delete image">';
+      html += '      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>';
+      html += '    </button>';
+      html += '  </div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+  }
+
+  function onIcFileChange(e) {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      if (icList.length >= IC_MAX) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const d = new Date();
+        const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+        const ext = (file.name.split('.').pop() || 'JPG').toUpperCase();
+        icList.push({
+          title: 'IMG QUINAPTISTEAM ' + yyyymmdd,
+          createdBy: 'QUINAPTISTEAM',
+          createdOn: d.toDateString(),
+          dateDdMmYyyy: pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(),
+          timeCreated: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true }),
+          dataUrl: ev.target.result,
+          fileType: ext
+        });
+        renderIcList();
+      };
+      reader.readAsDataURL(file);
+    });
+    // Reset so selecting same file again still triggers change
+    e.target.value = '';
+  }
 
   // ================= DOC CAPTURE UPLOADS =================
   const DC_STATIC_COUNT = 2;
@@ -1092,11 +1150,74 @@
       return;
     }
 
-    // Document Capture · Upload Image (popup item, placeholder)
+    // Document Capture · Upload Image (popup item) -> Image Capture screen
     if (e.target.closest('[data-dc-upload-img]')) {
       e.preventDefault();
       const menu = document.querySelector('[data-dc-more-menu]');
       if (menu) menu.hidden = true;
+      go('image-capture');
+      return;
+    }
+
+    // Image Capture · Skip / kebab / Upload
+    if (e.target.closest('[data-ic-skip]')) {
+      e.preventDefault();
+      go('document-capture');
+      return;
+    }
+    if (e.target.closest('[data-ic-more]')) {
+      e.preventDefault();
+      // For now, kebab on image-capture re-triggers the file picker
+      const fileInput = document.querySelector('[data-ic-file]');
+      if (fileInput) fileInput.click();
+      return;
+    }
+    if (e.target.closest('[data-ic-upload]')) {
+      e.preventDefault();
+      const fileInput = document.querySelector('[data-ic-file]');
+      if (fileInput) fileInput.click();
+      return;
+    }
+    // Image Capture · row delete X
+    const icDelBtn = e.target.closest('[data-ic-delete]');
+    if (icDelBtn) {
+      e.preventDefault();
+      const idx = parseInt(icDelBtn.dataset.icDelete, 10);
+      if (!isNaN(idx)) {
+        icList.splice(idx, 1);
+        renderIcList();
+      }
+      return;
+    }
+    // Image Capture · row click view
+    const icViewRow = e.target.closest('[data-ic-row-view]');
+    if (icViewRow) {
+      e.preventDefault();
+      const idx = parseInt(icViewRow.dataset.icRowView, 10);
+      const entry = icList[idx];
+      if (entry) {
+        const nameEl = document.querySelector('[data-img-disp-name]');
+        const typeEl = document.querySelector('[data-img-disp-type]');
+        const palletEl = document.querySelector('[data-img-disp-pallet]');
+        const sigEl = document.querySelector('[data-img-disp-sig]');
+        const upSigEl = document.querySelector('[data-img-disp-uploaded-sig]');
+        if (palletEl) palletEl.hidden = true;
+        if (sigEl) sigEl.hidden = true;
+        if (upSigEl) upSigEl.hidden = true;
+        // Use uploaded-sig section but show only image (re-purpose)
+        if (upSigEl) {
+          upSigEl.hidden = false;
+          const upSigner = document.querySelector('[data-up-sig-signer]');
+          const upDate = document.querySelector('[data-up-sig-date]');
+          const upImg = document.querySelector('[data-up-sig-img]');
+          if (upSigner) upSigner.textContent = '';
+          if (upDate) upDate.textContent = '';
+          if (upImg) upImg.src = entry.dataUrl || '';
+        }
+        if (nameEl) nameEl.textContent = entry.title;
+        if (typeEl) typeEl.textContent = entry.fileType || 'JPG';
+        go('image-display');
+      }
       return;
     }
 
@@ -1681,6 +1802,10 @@
 
   // Pre-render PO list (kept for first navigation after submit)
   renderPoList({ po: '', vendor: '' });
+
+  // Wire image-capture file input
+  const icFileInput = document.querySelector('[data-ic-file]');
+  if (icFileInput) icFileInput.addEventListener('change', onIcFileChange);
 
   // On every page load / refresh: always start on welcome screen, clear any
   // deep-link hash so URL doesn't carry previous state.

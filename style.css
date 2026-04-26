@@ -470,7 +470,8 @@ a:hover { text-decoration: underline; }
 .screen[data-screen="selected-items"],
 .screen[data-screen="document-capture"],
 .screen[data-screen="image-display"],
-.screen[data-screen="signature-capture"] {
+.screen[data-screen="signature-capture"],
+.screen[data-screen="image-capture"] {
   flex-direction: column;
   background: #ffffff;
   color: var(--ink);
@@ -2179,6 +2180,22 @@ a:hover { text-decoration: underline; }
 .sc-list {
   display: flex;
   flex-direction: column;
+}
+.ic-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+  padding: 14px 18px 0;
+  background: #fff;
+}
+.ic-stats-single {
+  grid-template-columns: 1fr;
+  padding: 14px 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 640px) {
+  .ic-stats { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px 0; }
+  .ic-stats-single { padding: 10px 14px; }
 }
 .sc-row {
   display: flex;
