@@ -933,10 +933,40 @@
       return;
     }
 
-    // Selected-items · more menu (placeholder)
+    // Selected-items · more menu toggle
     if (e.target.closest('[data-si-more]')) {
       e.preventDefault();
+      const menu = document.querySelector('[data-si-more-menu]');
+      if (menu) menu.hidden = !menu.hidden;
       return;
+    }
+
+    // Selected-items · Add New Item -> fresh process-item
+    if (e.target.closest('[data-si-add-new]')) {
+      e.preventDefault();
+      const menu = document.querySelector('[data-si-more-menu]');
+      if (menu) menu.hidden = true;
+      enterProcessItem({});
+      return;
+    }
+
+    // Selected-items · Empty Basket -> clear cart, stay on screen
+    if (e.target.closest('[data-si-empty]')) {
+      e.preventDefault();
+      const menu = document.querySelector('[data-si-more-menu]');
+      if (menu) menu.hidden = true;
+      cartItems = [];
+      renderSelectedItems();
+      return;
+    }
+
+    // Close more-menu when clicking outside
+    const moreMenu = document.querySelector('[data-si-more-menu]');
+    if (moreMenu && !moreMenu.hidden) {
+      const moreWrap = moreMenu.closest('.si-more-wrap');
+      if (moreWrap && !moreWrap.contains(e.target)) {
+        moreMenu.hidden = true;
+      }
     }
 
     // Close pi-select dropdown on outside click
