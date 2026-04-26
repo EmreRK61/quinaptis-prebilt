@@ -2145,6 +2145,11 @@ a:hover { text-decoration: underline; }
   .img-disp-fields { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px; }
   .img-disp-img { max-width: 80%; }
   .img-disp-svg { max-width: 100%; }
+  .img-disp-content {
+    align-items: flex-start;
+    padding: 14px 14px 24px;
+  }
+  .sig-img { max-width: 90%; max-height: 60%; }
 }
 
 /* ========================================================
