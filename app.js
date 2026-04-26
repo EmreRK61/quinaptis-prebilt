@@ -333,6 +333,35 @@
     sigPadHasContent = false;
   }
 
+  function cropSigCanvas(canvas) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const data = ctx.getImageData(0, 0, w, h).data;
+    let minX = w, minY = h, maxX = -1, maxY = -1;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (data[(y * w + x) * 4 + 3] > 0) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < minX || maxY < minY) return canvas.toDataURL('image/png');
+    const pad = 20;
+    const cx = Math.max(0, minX - pad);
+    const cy = Math.max(0, minY - pad);
+    const cw = Math.min(w - cx, (maxX - minX) + pad * 2);
+    const ch = Math.min(h - cy, (maxY - minY) + pad * 2);
+    const tmp = document.createElement('canvas');
+    tmp.width = cw;
+    tmp.height = ch;
+    tmp.getContext('2d').drawImage(canvas, cx, cy, cw, ch, 0, 0, cw, ch);
+    return tmp.toDataURL('image/png');
+  }
+
   function sigPadPos(e, canvas) {
     const rect = canvas.getBoundingClientRect();
     const t = e.touches ? e.touches[0] : e;
@@ -1140,7 +1169,7 @@
         const d = new Date();
         const yyyymmdd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
         const canvas = document.querySelector('[data-sig-pad]');
-        const dataUrl = canvas ? canvas.toDataURL('image/png') : '';
+        const dataUrl = canvas ? cropSigCanvas(canvas) : '';
         sigList.push({
           title: titlePrefix + ' ' + yyyymmdd,
           signee: signeeRaw,
