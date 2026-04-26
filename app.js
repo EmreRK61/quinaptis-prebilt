@@ -220,6 +220,10 @@
 
   function openDocHeader(row, origin) {
     docHeaderOrigin = origin || 'selection';
+    // New PO selected: reset cart so we don't mix items across POs
+    if (currentPo !== (row.number || '')) {
+      cartItems = [];
+    }
     currentPo = row.number || '';
     const poEl = document.querySelector('[data-doc-po]');
     const vendorEl = document.querySelector('[data-doc-vendor]');
@@ -837,7 +841,11 @@
       const desc = (document.querySelector('[data-pi-desc]')?.textContent || '').trim();
       const unit = (document.querySelector('[data-pi-unit]')?.textContent || '').trim();
       const storage = storageEl ? storageEl.textContent.trim() : '';
-      cartItems = [{ item, material, desc, qty, unit, storage }];
+      cartItems.push({ item, material, desc, qty, unit, storage });
+      // Clear inputs so next Save is a fresh entry
+      qtyInput.value = '';
+      const batchInput = document.querySelector('[data-pi-input-batch]');
+      if (batchInput) batchInput.value = '';
       renderSelectedItems();
       go('selected-items');
       return;
