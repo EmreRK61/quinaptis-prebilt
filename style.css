@@ -2183,7 +2183,7 @@ a:hover { text-decoration: underline; }
 
 /* ============ Signature modal ============ */
 .modal-card-medium {
-  width: min(92vw, 560px);
+  width: min(92vw, 440px);
 }
 .sig-modal-header {
   height: 28px;
@@ -2214,13 +2214,13 @@ a:hover { text-decoration: underline; }
 .sig-pad-field { margin-bottom: 0; }
 .sig-pad {
   width: 100%;
-  height: 220px;
+  height: 420px;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 4px;
   display: block;
   touch-action: none;
-  cursor: crosshair;
+  cursor: default;
 }
 .sig-cancel-btn {
   display: inline-flex;
@@ -2229,7 +2229,7 @@ a:hover { text-decoration: underline; }
 }
 
 @media (max-width: 640px) {
-  .sig-pad { height: 180px; }
+  .sig-pad { height: 360px; }
 }
 
 /* ========================================================
