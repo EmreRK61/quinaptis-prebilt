@@ -232,6 +232,29 @@
     go('doc-header');
   }
 
+  // ================= MESSAGES MODAL =================
+  const THUMBS_UP_PATHS = '<path d="M7 22V11"></path><path d="M5 11h12.4a2 2 0 0 1 1.95 2.45l-1.5 7A2 2 0 0 1 15.9 22H7"></path><path d="M11 11V6.2a3 3 0 0 1 3-3h0a1 1 0 0 1 1 1V8c0 .8.45 1.5 1.1 1.85A3 3 0 0 0 17 10h.4"></path>';
+  const THUMBS_DOWN_PATHS = '<path d="M17 2v11"></path><path d="M19 13H6.6a2 2 0 0 1-1.95-2.45l1.5-7A2 2 0 0 1 8.1 2H17"></path><path d="M13 13v4.8a3 3 0 0 1-3 3h0a1 1 0 0 1-1-1V16c0-.8-.45-1.5-1.1-1.85A3 3 0 0 0 7 14h-.4"></path>';
+
+  function showMessage(text, type) {
+    const txt = document.querySelector('[data-msg-text]');
+    const badge = document.querySelector('[data-msg-badge]');
+    const icon = document.querySelector('[data-msg-icon]');
+    if (txt) txt.textContent = text;
+    if (badge) {
+      badge.classList.remove('msg-badge-success', 'msg-badge-error');
+      if (type === 'success') {
+        badge.textContent = 'S';
+        badge.classList.add('msg-badge-success');
+      } else {
+        badge.textContent = 'E';
+        badge.classList.add('msg-badge-error');
+      }
+    }
+    if (icon) icon.innerHTML = type === 'success' ? THUMBS_UP_PATHS : THUMBS_DOWN_PATHS;
+    openModal('messages');
+  }
+
   // ================= TOAST =================
   let toastTimer = null;
   function showToast(msg) {
@@ -788,7 +811,7 @@
       const poOk = po === '' || PO_DATA.some(r => r.number === po);
       const vendorOk = vendor === '' || PO_DATA.some(r => r.vendor === vendor);
       if (!poOk || !vendorOk) {
-        openModal('messages');
+        showMessage('No matching documents found', 'error');
         return;
       }
       const matches = filterPoRows({ po, vendor });
@@ -942,17 +965,8 @@
       editIndex = null;
       renderSelectedItems();
       renderPoList();
-      // Update messages modal content -> success
-      const msgText = document.querySelector('[data-msg-text]');
-      const msgBadge = document.querySelector('[data-msg-badge]');
-      if (msgText) msgText.textContent = 'Material document ' + materialDoc + ' posted';
-      if (msgBadge) {
-        msgBadge.textContent = 'S';
-        msgBadge.classList.remove('msg-badge-error');
-        msgBadge.classList.add('msg-badge-success');
-      }
       go('selection');
-      openModal('messages');
+      showMessage('Material document ' + materialDoc + ' posted', 'success');
       return;
     }
 
