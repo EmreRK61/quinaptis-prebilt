@@ -609,7 +609,11 @@
     if (e.target && e.target.matches && e.target.matches('[data-pi-input-qty]')) {
       const cleaned = e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
       if (cleaned !== e.target.value) e.target.value = cleaned;
-      if (e.target.value.trim()) e.target.classList.remove('error');
+      if (e.target.value.trim()) {
+        e.target.classList.remove('error');
+        const errMsg = document.querySelector('[data-pi-qty-error]');
+        if (errMsg) errMsg.hidden = true;
+      }
     }
   });
 
@@ -823,6 +827,8 @@
           qtyInput.classList.add('error');
           qtyInput.focus();
         }
+        const errMsg = document.querySelector('[data-pi-qty-error]');
+        if (errMsg) errMsg.hidden = false;
         showToast('Error found in input data');
         return;
       }
