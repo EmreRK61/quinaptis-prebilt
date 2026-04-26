@@ -1217,6 +1217,16 @@
       openImageUploadDialog();
       return;
     }
+    // Image Capture (camera) -> open dialog + trigger camera input
+    if (e.target.closest('[data-ic-image-capture]')) {
+      e.preventDefault();
+      const menu = document.querySelector('[data-ic-more-menu]');
+      if (menu) menu.hidden = true;
+      openImageUploadDialog();
+      const camInput = document.querySelector('[data-ic-camera]');
+      if (camInput) camInput.click();
+      return;
+    }
     // Image Capture · Upload (commit list to Attachment List, navigate back)
     if (e.target.closest('[data-ic-upload]')) {
       e.preventDefault();
@@ -1886,9 +1896,11 @@
   // Pre-render PO list (kept for first navigation after submit)
   renderPoList({ po: '', vendor: '' });
 
-  // Wire image-capture file input
+  // Wire image-capture file inputs (browse + camera)
   const icFileInput = document.querySelector('[data-ic-file]');
   if (icFileInput) icFileInput.addEventListener('change', onIcFileChange);
+  const icCamInput = document.querySelector('[data-ic-camera]');
+  if (icCamInput) icCamInput.addEventListener('change', onIcFileChange);
 
   // On every page load / refresh: always start on welcome screen, clear any
   // deep-link hash so URL doesn't carry previous state.
