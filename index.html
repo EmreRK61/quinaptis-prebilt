@@ -545,7 +545,94 @@
     </div>
   </section>
 
-  <!-- ============ SCREEN 12 · SELECTED ITEMS (cart) ============ -->
+  <!-- ============ SCREEN 12 · DOCUMENT CAPTURE (Attachment List) ============ -->
+  <section class="screen" data-screen="document-capture">
+    <header class="app-header app-header-slim">
+      <button class="icon-btn back-btn" data-doc-cap-back aria-label="Navigate back">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span class="tip tip-below tip-anchor-left">Navigate back</span>
+      </button>
+      <span class="sel-breadcrumb">Document Capture</span>
+      <div class="app-title sel-title" data-debug-title data-debug-page="oPage6000">Attachment List</div>
+      <div class="app-header-right">
+        <button class="icon-btn info-btn" data-modal="infoDocumentCapture" aria-label="App Description">
+          <span class="info-letter">i</span>
+          <span class="tip tip-below tip-anchor-right">App Description</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="dc-body">
+      <div class="dc-summary">
+        <div class="dc-field">
+          <label>Object Type:</label>
+          <div class="dc-value">Purchase Order</div>
+        </div>
+        <div class="dc-field">
+          <label>Total number of items:</label>
+          <div class="dc-value" data-dc-total>2</div>
+        </div>
+      </div>
+
+      <div class="dc-filter-wrap">
+        <input type="text" class="dc-filter" data-dc-filter placeholder="Filter" autocomplete="off" spellcheck="false">
+        <svg class="dc-search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="20" y1="20" x2="16.5" y2="16.5"></line>
+        </svg>
+      </div>
+
+      <div class="dc-list" data-dc-list>
+        <div class="dc-row" data-dc-row="img">
+          <div class="dc-row-main">
+            <div class="dc-row-title">Demo IMG</div>
+            <div class="dc-row-sub">Created By</div>
+            <div class="dc-row-value">Quinaptisteam</div>
+          </div>
+          <div class="dc-row-chevron">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 6 15 12 9 18"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="dc-row" data-dc-row="sig">
+          <div class="dc-row-main">
+            <div class="dc-row-title">Demo SIG</div>
+            <div class="dc-row-sub">Created By</div>
+            <div class="dc-row-value">Quinaptisteam</div>
+          </div>
+          <div class="dc-row-chevron">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 6 15 12 9 18"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dc-toolbar">
+      <div class="dc-more-wrap">
+        <button class="dc-more-btn" data-dc-more aria-label="More options">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="6" r="1.2" fill="currentColor"></circle>
+            <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
+            <circle cx="12" cy="18" r="1.2" fill="currentColor"></circle>
+          </svg>
+        </button>
+      </div>
+      <button class="dc-continue-btn" data-dc-continue>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="13 6 19 12 13 18"></polyline>
+        </svg>
+        <span>Continue</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 13 · SELECTED ITEMS (cart) ============ -->
   <section class="screen" data-screen="selected-items">
     <header class="app-header app-header-slim">
       <button class="icon-btn back-btn" data-goto="process-item" aria-label="Navigate back">

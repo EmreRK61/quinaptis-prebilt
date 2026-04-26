@@ -467,7 +467,8 @@ a:hover { text-decoration: underline; }
 .screen[data-screen="doc-header"],
 .screen[data-screen="process-item"],
 .screen[data-screen="po-list"],
-.screen[data-screen="selected-items"] {
+.screen[data-screen="selected-items"],
+.screen[data-screen="document-capture"] {
   flex-direction: column;
   background: #ffffff;
   color: var(--ink);
@@ -1925,6 +1926,158 @@ a:hover { text-decoration: underline; }
   .si-row { padding: 12px 14px; }
   .si-toolbar { padding: 8px 10px; }
   .si-post-btn { padding: 8px 14px; font-size: 13px; }
+}
+
+/* ========================================================
+   Document Capture (Attachment List) screen
+   ======================================================== */
+.dc-body {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+.dc-summary {
+  padding: 14px 18px 18px;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+.dc-summary .dc-field + .dc-field { margin-top: 12px; }
+.dc-field label {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.dc-value {
+  background: #fafbfc;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+.dc-filter-wrap {
+  position: relative;
+  padding: 10px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.dc-filter {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 9px 38px 9px 12px;
+  font-size: 14px;
+  color: var(--ink);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.dc-filter:focus { border-color: var(--q-navy); }
+.dc-search-icon {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+.dc-list { display: flex; flex-direction: column; }
+.dc-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.dc-row:hover { background: #f7f9fc; }
+.dc-row:active { background: #eef2f7; }
+.dc-row-main { flex: 1; }
+.dc-row-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.dc-row-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 2px;
+}
+.dc-row-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.dc-row-chevron {
+  color: var(--ink-soft);
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.dc-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #2a3144;
+  border-top: 1px solid #1a1f2e;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+}
+.dc-more-wrap {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+}
+.dc-more-btn {
+  background: transparent;
+  border: none;
+  color: #f1f3f7;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.dc-more-btn:hover { background: rgba(255,255,255,0.08); }
+.dc-continue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f3f7;
+  color: var(--ink);
+  border: none;
+  border-radius: 20px;
+  padding: 9px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+.dc-continue-btn:hover { background: #e4e7ef; }
+.dc-continue-btn:active { transform: scale(0.98); }
+
+@media (max-width: 640px) {
+  .dc-summary { padding: 12px 14px 14px; }
+  .dc-filter-wrap { padding: 10px 14px; }
+  .dc-search-icon { right: 22px; }
+  .dc-row { padding: 12px 14px; }
+  .dc-toolbar { padding: 8px 10px; }
+  .dc-continue-btn { padding: 8px 14px; font-size: 13px; }
 }
 
 /* ========================================================

@@ -36,7 +36,7 @@
   const screens = document.querySelectorAll('.screen');
   const modals  = document.querySelectorAll('.modal');
 
-  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items']);
+  const LIGHT_SCREENS = new Set(['main', 'inbound', 'selection', 'po-list', 'doc-header', 'process-item', 'selected-items', 'document-capture']);
   function syncBodyBg(id) {
     if (LIGHT_SCREENS.has(id)) {
       document.body.setAttribute('data-screen-bg', 'light');
@@ -217,6 +217,7 @@
 
   // ================= DOC HEADER =================
   let docHeaderOrigin = 'selection';
+  let docCaptureOrigin = 'doc-header';
 
   function openDocHeader(row, origin) {
     docHeaderOrigin = origin || 'selection';
@@ -864,8 +865,37 @@
       return;
     }
 
-    // Doc header / process item · capture image/signature (placeholder)
+    // Doc header / process item · capture image/signature -> Document Capture
     if (e.target.closest('[data-doc-capture]')) {
+      e.preventDefault();
+      const activeScreen = document.querySelector('.screen.active');
+      docCaptureOrigin = activeScreen ? activeScreen.dataset.screen : 'doc-header';
+      go('document-capture');
+      return;
+    }
+
+    // Document Capture · back
+    if (e.target.closest('[data-doc-cap-back]')) {
+      e.preventDefault();
+      go(docCaptureOrigin || 'doc-header');
+      return;
+    }
+
+    // Document Capture · continue (placeholder for next step)
+    if (e.target.closest('[data-dc-continue]')) {
+      e.preventDefault();
+      go(docCaptureOrigin || 'doc-header');
+      return;
+    }
+
+    // Document Capture · more menu (placeholder)
+    if (e.target.closest('[data-dc-more]')) {
+      e.preventDefault();
+      return;
+    }
+
+    // Document Capture · row click (placeholder)
+    if (e.target.closest('[data-dc-row]')) {
       e.preventDefault();
       return;
     }
