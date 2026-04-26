@@ -926,6 +926,9 @@
       debugTitle._lastClick = now;
       if (debugTitle._clicks >= 4) {
         debugTitle._clicks = 0;
+        const page = debugTitle.dataset.debugPage || 'oPage1000';
+        const pageEl = document.querySelector('[data-debug-page-value]');
+        if (pageEl) pageEl.textContent = page;
         openModal('debug');
       }
       return;
