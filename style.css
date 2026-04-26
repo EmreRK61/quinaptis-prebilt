@@ -2003,6 +2003,7 @@ a:hover { text-decoration: underline; }
 }
 .dc-row:hover { background: #f7f9fc; }
 .dc-row:active { background: #eef2f7; }
+.dc-row[hidden] { display: none; }
 .dc-row-main { flex: 1; }
 .dc-row-title {
   font-size: 15px;

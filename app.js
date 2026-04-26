@@ -836,7 +836,7 @@
   })();
 
   // ================= EVENT DELEGATION =================
-  // PO list · live filter input + Process Item numeric qty filter
+  // PO list · live filter input + Process Item numeric qty filter + DC list filter
   document.addEventListener('input', (e) => {
     if (e.target && e.target.matches && e.target.matches('[data-po-filter]')) {
       renderPoList();
@@ -849,6 +849,19 @@
         const errMsg = document.querySelector('[data-pi-qty-error]');
         if (errMsg) errMsg.hidden = true;
       }
+    }
+    if (e.target && e.target.matches && e.target.matches('[data-dc-filter]')) {
+      const q = (e.target.value || '').trim().toLowerCase();
+      const listEl = document.querySelector('[data-dc-list]');
+      if (!listEl) return;
+      listEl.querySelectorAll('.dc-row').forEach(row => {
+        if (!q) {
+          row.hidden = false;
+        } else {
+          const text = (row.textContent || '').toLowerCase();
+          row.hidden = !text.includes(q);
+        }
+      });
     }
   });
 
