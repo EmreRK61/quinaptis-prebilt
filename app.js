@@ -894,13 +894,32 @@
       return;
     }
 
-    // Document Capture · row click -> Display screen
+    // Document Capture · row click -> Display screen (img or sig)
     const dcRow = e.target.closest('[data-dc-row]');
     if (dcRow) {
       e.preventDefault();
-      if (dcRow.dataset.dcRow === 'img') {
-        go('image-display');
+      const kind = dcRow.dataset.dcRow;
+      const nameEl = document.querySelector('[data-img-disp-name]');
+      const typeEl = document.querySelector('[data-img-disp-type]');
+      const palletEl = document.querySelector('[data-img-disp-pallet]');
+      const sigEl = document.querySelector('[data-img-disp-sig]');
+      if (kind === 'sig') {
+        if (nameEl) nameEl.textContent = 'Demo SIG';
+        if (typeEl) typeEl.textContent = 'JPG';
+        if (palletEl) palletEl.hidden = true;
+        if (sigEl) sigEl.hidden = false;
+        const dateEl = document.querySelector('[data-sig-date]');
+        if (dateEl) {
+          const d = new Date();
+          dateEl.textContent = pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear();
+        }
+      } else {
+        if (nameEl) nameEl.textContent = 'Demo IMG';
+        if (typeEl) typeEl.textContent = 'JPG';
+        if (palletEl) palletEl.hidden = false;
+        if (sigEl) sigEl.hidden = true;
       }
+      go('image-display');
       return;
     }
 
